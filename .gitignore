@@ -1,0 +1,15 @@
+/config
+__pycache__
+.pybuild/
+debian/debhelper-*-stamp
+debian/files
+debian/tmp/
+debian/*.debhelper.log
+debian/*.debhelper
+debian/*.substvars
+debian/python3-pipedput/
+build/
+dist/
+.tox/
+pipedput.egg-info/
+

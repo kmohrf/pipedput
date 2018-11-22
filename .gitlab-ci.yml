@@ -1,0 +1,23 @@
+image: debian:stretch
+
+before_script:
+    - apt update -qqy
+    - apt install -qqy wget debhelper dh-exec dh-python python3-all python3-flake8 python3-setuptools python3-flask
+
+make_test:
+    stage: test
+    script:
+        - make test
+
+make_deb_package:
+    stage: deploy
+    only:
+        - tags
+        - triggers
+        - schedules
+    script:
+        - make dist-deb DEBIAN_BUILDPACKAGE_COMMAND="dpkg-buildpackage --no-sign"
+    artifacts:
+        paths:
+            - build/debian
+        expire_in: 1w
