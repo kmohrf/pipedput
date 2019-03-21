@@ -2,11 +2,22 @@ Source: pipedput
 Section: python
 Priority: optional
 Maintainer: Konrad Mohrfeldt <konrad.mohrfeldt@farbdev.org>
-Build-Depends: debhelper (>= 9), wget, dh-exec, dh-python, python3-all, python3-flake8,
- python3-setuptools, python3-flask
+Build-Depends:
+ debhelper (>= 9),
+ dh-exec,
+ dh-python,
+ python3-all,
+ python3-flake8,
+ python3-flask,
+ python3-setuptools,
+ wget,
 Standards-Version: 4.0.0
 
 Package: python3-pipedput
 Architecture: all
-Depends: ${misc:Depends}, ${python3:Depends}, python3-flask, dput
+Depends:
+ ${misc:Depends},
+ ${python3:Depends},
+ dput,
+ python3-flask,
 Description: a GitLab Pipeline Hook to dput web service
