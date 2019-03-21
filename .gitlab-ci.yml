@@ -2,7 +2,7 @@ image: debian:stretch
 
 before_script:
     - apt update -qqy
-    - apt install -qqy wget debhelper dh-exec dh-python python3-all python3-flake8 python3-setuptools python3-flask
+    - apt install -qqy debhelper dh-exec dh-python python3-all python3-flake8 python3-flask python3-setuptools python3-werkzeug wget
 
 make_test:
     stage: test

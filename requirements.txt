@@ -1,1 +1,4 @@
+# these requirements are aligned with versions from Debian 9 (stretch)
+# you can install more recent versions if you’d like
 flask==0.12.1           # debian: python3-flask
+werkzeug==0.11.15       # debian: python3-werkzeug

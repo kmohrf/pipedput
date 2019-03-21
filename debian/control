@@ -10,6 +10,7 @@ Build-Depends:
  python3-flake8,
  python3-flask,
  python3-setuptools,
+ python3-werkzeug,
  wget,
 Standards-Version: 4.0.0
 
@@ -20,4 +21,5 @@ Depends:
  ${python3:Depends},
  dput,
  python3-flask,
+ python3-werkzeug,
 Description: a GitLab Pipeline Hook to dput web service
