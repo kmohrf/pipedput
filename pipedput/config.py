@@ -11,11 +11,11 @@ class ProjectConfig:
         self.project_name = name
         self.dput_config = dput_config
         self.token = token
-        self.tests = []
+        self.constraints = []
         self.hooks = []
 
     def should_process(self, event):
-        return all([test(event) for test in self.tests])
+        return all([constraint(event) for constraint in self.constraints])
 
     def process(self, event):
         if self.should_process(event):
@@ -31,9 +31,9 @@ class ProjectConfig:
                     invoke_all(self.hooks, None, EventProcessEvent.ON_PUBLISH, payload)
                     yield payload
 
-    def add_test(self, *tests):
-        for test in tests:
-            self.tests.append(test)
+    def add_constraint(self, *constraints):
+        for constraint in constraints:
+            self.constraints.append(constraint)
         return self
 
     def on(self, callback, only_event: EventProcessEvent = None):

@@ -15,13 +15,13 @@ When pipedput is starts it excepts the environment variable `PIPEDPUT_CONFIG_FIL
 ```python
 import os.path
 from pipedput.config import ProjectConfig
-from pipedput.tests import RequireTag, RequireSuccess
+from pipedput.constraints import RequireTag, RequireSuccess
 
 BASE_PATH = os.path.realpath(os.path.dirname(__file__))
 
 myproject = ProjectConfig('myproject', os.path.join(BASE_PATH, 'myproject.dput.cf'),
                           token='my-secret-token')
-myproject.add_test(
+myproject.add_constraint(
     RequireTag(),
     RequireSuccess())
 
