@@ -10,7 +10,7 @@ pipedput only needs flask to run and is built against the current stable version
 
 ### Application
 
-When pipedput is starts it excepts the environment variable `PIPEDPUT_CONFIG_FILE` to be set to the **absolute path** of the config file. This config file is executed as python code and must set the `PROJECT_CONFIGS` variable. See the following example:
+When pipedput is started it expects the environment variable `PIPEDPUT_CONFIG_FILE` to be set to the **absolute path** of the config file. This config file is executed as python code and must set the `PROJECT_CONFIGS` variable. See the following example:
 
 ```python
 import os.path
