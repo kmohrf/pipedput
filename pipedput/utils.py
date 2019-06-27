@@ -6,8 +6,8 @@ import shutil
 import subprocess
 import tempfile
 from typing import Any, Iterable, Iterator, Mapping
-import urllib.request
 from urllib.parse import urlparse
+from urllib.request import Request, urlopen
 from werkzeug.local import LocalProxy
 import zipfile
 
@@ -31,8 +31,11 @@ def pick(mapping: Mapping, *keys):
     }
 
 
-def download_file(url: str, destination: str) -> None:
-    with urllib.request.urlopen(url) as response, open(destination, mode='wb') as output:
+def download_file(url: str, destination: str, token: str) -> None:
+    request = Request(url)
+    if token:
+        request.add_header('PRIVATE-TOKEN', token)
+    with urlopen(request) as response, open(destination, mode='wb') as output:
         shutil.copyfileobj(response, output)
 
 
@@ -76,12 +79,12 @@ def get_artifact_urls(event) -> Iterator[str]:
                 .format(job_id=job_id, **args)
 
 
-def process_artifact(url, dput_config_file) -> Iterator[subprocess.CompletedProcess]:
+def process_artifact(url, dput_config_file, token=None) -> Iterator[subprocess.CompletedProcess]:
     with tempfile.TemporaryDirectory() as run_dir:
         artifact_file = os.path.join(run_dir, 'artifacts.zip')
         artifact_dir = os.path.join(run_dir, 'data')
         logger.info('downloading artifact archive from {}'.format(url))
-        download_file(url, artifact_file)
+        download_file(url, artifact_file, token)
         unzip(artifact_file, artifact_dir)
         for change in find_changes(artifact_dir):
             logger.info('uploading changes from {}'.format(change))

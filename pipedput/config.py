@@ -7,10 +7,11 @@ class EventProcessEvent(enum.Enum):
 
 
 class ProjectConfig:
-    def __init__(self, name, dput_config, token=None) -> None:
+    def __init__(self, name, dput_config, token=None, artifact_token=None) -> None:
         self.project_name = name
         self.dput_config = dput_config
         self.token = token
+        self.artifact_token = artifact_token
         self.constraints = []
         self.hooks = []
 
@@ -20,7 +21,8 @@ class ProjectConfig:
     def process(self, event):
         if self.should_process(event):
             for artifact in get_artifact_urls(event):
-                for change, was_successful in process_artifact(artifact, self.dput_config):
+                for change, was_successful in process_artifact(artifact, self.dput_config,
+                                                               self.artifact_token):
                     payload = {
                         'project': self.project_name,
                         'source': event,
