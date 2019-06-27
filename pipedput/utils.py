@@ -7,6 +7,7 @@ import subprocess
 import tempfile
 from typing import Any, Iterable, Iterator, Mapping
 import urllib.request
+from urllib.parse import urlparse
 from werkzeug.local import LocalProxy
 import zipfile
 
@@ -60,18 +61,19 @@ def get_artifact_urls(event) -> Iterator[str]:
     generator that yields artifact urls from a gitlab pipeline event
 
     url format:
-        https://example.com/<namespace>/<project>/builds/artifacts/<ref>/download?job=<job_name>
+        https://example.com/api/v4/projects/<project_id>/jobs/<job_id>/artifacts
     """
+    base_url = urlparse(event['project']['web_url'])
     args = {
-        'project': event['project']['web_url'],
-        'ref': event['object_attributes']['ref']
+        'project_id': event['project']['id'],
+        'origin': '{}://{}'.format(base_url.scheme, base_url.netloc)
     }
 
     for build in event['builds']:
         if build['artifacts_file']['filename'] is not None:
-            job_name = build['name']
-            yield '{project}/builds/artifacts/{ref}/download?job={job_name}'\
-                .format(job_name=job_name, **args)
+            job_id = build['id']
+            yield '{origin}/api/v4/projects/{project_id}/jobs/{job_id}/artifacts'\
+                .format(job_id=job_id, **args)
 
 
 def process_artifact(url, dput_config_file) -> Iterator[subprocess.CompletedProcess]:
