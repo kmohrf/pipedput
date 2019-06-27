@@ -30,9 +30,15 @@ PROJECT_CONFIGS = [
 ]
 ```
 
+Each `ProjectConfig` must be initialized with the project name and a dput configuration, that is used to push the generated deb packages to the deb repository. Optional parameters include:
+
+ `token` which refers to the *Secret Token* field that can **and SHOULD** be defined for each web-hook and is used to check if the pipeline event originates from your GitLab and
+
+ `artifact_token` referring to an access token with `api` scope in case you want pipedput to act on pipeline events for a private project.
+
 ### Web Server
 
-UWSGI is recommended for running pipedput in production.
+uWSGI is recommended for running pipedput in production. See the example configurations for [uWSGI](./debian/uwsgi.ini) and [NGINX](./debian/nginx.conf).
 
 ## Web-Hook Configuration
 
