@@ -1,0 +1,10 @@
+{% extends "mails/base.html" %}
+
+{% block content %}
+    <p>
+        A pipeline was executed for <strong>{{ event.project.path_with_namespace }}</strong> but
+        pipedput <strong>encountered an error</strong>:
+    </p>
+    <blockquote class="is-failure">{{ exc }}</blockquote>
+    <p>The system log for pipedput on {{ hostname }} may contain more detailed information.</p>
+{% endblock %}

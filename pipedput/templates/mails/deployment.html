@@ -1,0 +1,26 @@
+{% extends "mails/base.html" %}
+
+{% block content %}
+    <p>
+        A pipeline was executed for <strong>{{ event.project.path_with_namespace }}</strong> and
+        resulted in the following deployments:
+    </p>
+    <ul class="checklist">
+        {% for deployment in deployments %}
+            <li class="{% if deployment.was_successful %}is-success{% else %}is-failure{% endif %}">
+                <p class="title">
+                    {{ deployment.target_name }}
+                    {% if asset %}({{ asset }}){% endif %}
+                </p>
+                {% if deployment.exc %}
+                    <blockquote class="is-failure">
+                        {{ deployment.exc }}
+                    </blockquote>
+                {% endif %}
+                {% if deployment.error %}
+                    <pre>{{ error }}</pre>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

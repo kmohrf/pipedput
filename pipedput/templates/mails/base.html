@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title %}{{ title | default('pipedput') }}{% endblock %}</title>
+        <style>
+            html {
+                background: #f0f0f0;
+                color: #222;
+                font:
+                    400 16px / 1.3
+                    'Fira Sans', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+            }
+
+            main {
+                min-width: 400px;
+                max-width: 75%;
+                margin: 3rem auto;
+                border-radius: 10px;
+                padding: 2rem;
+                background: white;
+                box-shadow:
+                    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+                    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            }
+
+            blockquote {
+                border-left: 5px solid;
+                margin-left: .5rem;
+                padding: .5rem 0 .5rem 1rem;
+            }
+
+            blockquote.is-failure {
+                border-color: crimson;
+            }
+
+            .checklist > li {
+                margin-bottom: 1rem;
+                padding-left: .5rem;
+            }
+
+            .checklist > li.is-success > .title {
+                color: darkgreen;
+            }
+
+            .checklist > li.is-failure > .title {
+                color: crimson;
+            }
+
+            .checklist > li.is-success::marker {
+                content: "✔";
+                color: darkgreen;
+            }
+
+            .checklist > li.is-failure::marker {
+                content: "✘";
+                color: crimson;
+            }
+
+            pre, code {
+                font-family: 'Fira Code', Menlo, ui-monospace, SFMono-Regular, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+            }
+
+            p:first-child {
+                margin-top: 0;
+            }
+
+            p:last-child {
+                margin-bottom: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <main>
+            {% block header %}
+                <header>
+                    <p>Hello {{ event.user.name }},</p>
+                    <p>this is the pipedput deployment service speaking to you from <code>{{ hostname }}</code>.</p>
+                </header>
+            {% endblock %}
+            {% block content %}{% endblock %}
+        </main>
+    </body>
+</html>

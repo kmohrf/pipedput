@@ -1,0 +1,4 @@
+[
+    { "type": "branch", "name": "main" },
+    { "type": "tag", "name": "v2.2.0" }
+]
