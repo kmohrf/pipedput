@@ -1,15 +1,29 @@
-/config
-__pycache__
-.pybuild/
-debian/debhelper-*-stamp
-debian/files
-debian/tmp/
-debian/*.debhelper.log
-debian/*.debhelper
-debian/*.substvars
-debian/python3-pipedput/
-build/
-dist/
+# local app configuration
+.env
+/config.py
+/pipedput_extensions/
+*.twine.cfg
+*.dput.cfg
+
+# python files
+__pycache__/
+/.pybuild/
+/dist/
 .tox/
 pipedput.egg-info/
+.coverage*
 
+# deb packaging
+/debian/debhelper-*-stamp
+/debian/files
+/debian/tmp/
+/debian/*.debhelper.log
+/debian/*.debhelper
+/debian/*.substvars
+/debian/pipedput/
+/debian/python3-pipedput/
+/build/
+
+# editor files
+.idea/
+*.swp*

@@ -1,0 +1,6 @@
+#!/bin/sh
+
+set -eu
+
+echo dput "$@"
+if [ "$1" = "fail" ]; then exit 1; fi

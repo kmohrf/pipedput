@@ -1,0 +1,21 @@
+[Unit]
+Description=A general-purpose GitLab pipeline artifact handler
+ConditionPathExists=/etc/pipedput/config.py
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/default/pipedput
+Environment=PYTHONPATH=/etc/pipedput/pipedput_extensions
+ExecStart=uwsgi \
+    --plugin=python3 \
+    --socket=/run/pipedput/socket \
+    --chown-socket=www-data:www-data \
+    --chmod-socket=660 \
+    --uid=_pipedput \
+    /etc/pipedput/uwsgi.ini
+Restart=on-failure
+RuntimeDirectory=pipedput
+WorkingDirectory=/var/lib/pipedput
+
+[Install]
+WantedBy=multi-user.target

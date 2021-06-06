@@ -1,23 +1,41 @@
-image: debian:stretch
+image: git-registry.hack-hro.de:443/kmohrf/pipedput/build:buster
 
-before_script:
-    - apt update -qqy
-    - apt install -qqy debhelper dh-exec dh-python python3-all python3-flake8 python3-flask python3-setuptools python3-werkzeug wget
+stages:
+  - test
+  - build
+  - deploy
 
-make_test:
-    stage: test
-    script:
-        - make test
+.run_tests: &run_tests
+  stage: test
+  variables:
+    TOX_SKIP_ENV: lint
+  script:
+    - tox -v
 
-make_deb_package:
-    stage: deploy
-    only:
-        - tags
-        - triggers
-        - schedules
-    script:
-        - make dist-deb DEBIAN_BUILDPACKAGE_COMMAND="dpkg-buildpackage --no-sign"
-    artifacts:
-        paths:
-            - build/debian
-        expire_in: 1w
+lint:
+  <<: *run_tests
+  variables:
+    TOX_SKIP_ENV: test-*
+
+lint::types:
+  image: node:lts-buster-slim
+  stage: test
+  script:
+    - apt update && apt install -y make python3-pip wget
+    - pip3 install ./ uwsgidecorators sentry_sdk
+    - npm install -g pyright
+    - make lint-python-pyright
+
+test::python37:
+  <<: *run_tests
+
+build::deb-package:
+  stage: build
+  variables:
+    PYBUILD_DISABLE: test
+  script:
+    - make dist-deb DEBIAN_BUILDPACKAGE_COMMAND="dpkg-buildpackage -sa --no-sign" DISABLE_PYTHON_TESTS=1
+  artifacts:
+    paths:
+      - build/debian
+    expire_in: 1w

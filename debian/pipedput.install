@@ -1,0 +1,5 @@
+#!/usr/bin/dh-exec
+debian/system-files/uwsgi.ini => /etc/pipedput/uwsgi.ini
+debian/system-files/nginx.conf => /etc/nginx/snippets/pipedput.conf
+debian/system-files/config.py => /etc/pipedput/config.py.dist
+debian/system-files/hooks.py => /etc/pipedput/pipedput_extensions/example_hooks.py

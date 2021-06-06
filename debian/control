@@ -1,25 +1,47 @@
 Source: pipedput
-Section: python
+Section: web
 Priority: optional
 Maintainer: Konrad Mohrfeldt <konrad.mohrfeldt@farbdev.org>
 Build-Depends:
- debhelper (>= 9),
+ debhelper,
  dh-exec,
  dh-python,
+ dh-sysuser,
  python3-all,
+ python3-typing-extensions (>= 3.7.4),
+ python3-cssselect,
  python3-flake8,
  python3-flask,
+ python3-flask-mail,
+ python3-lxml,
  python3-setuptools,
- python3-werkzeug,
  wget,
-Standards-Version: 4.0.0
+Standards-Version: 4.5.0
+
+Package: pipedput
+Architecture: all
+Depends:
+ ${misc:Depends},
+ python3-uwsgidecorators,
+ uwsgi-core,
+ uwsgi-plugin-python3,
+Recommends:
+ ${misc:Recommends},
+ nginx,
+Description: A general-purpose GitLab pipeline artifact handler
 
 Package: python3-pipedput
 Architecture: all
 Depends:
  ${misc:Depends},
  ${python3:Depends},
- dput,
+ python3-all,
+ python3-typing-extensions (>= 3.7.4),
  python3-flask,
- python3-werkzeug,
-Description: a GitLab Pipeline Hook to dput web service
+ python3-flask-mail,
+ python3-jinja2,
+Suggests:
+ ${misc:Suggests},
+ dput,
+ twine,
+Description: A general-purpose GitLab pipeline artifact handler (python lib)

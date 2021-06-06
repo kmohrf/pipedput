@@ -4,4 +4,9 @@ export PYBUILD_NAME=pipedput
 export PYBUILD_DISABLE=test
 
 %:
-	dh $@ --package=python3-pipedput --with python3 --buildsystem=pybuild
+	dh $@ --package python3-pipedput --with python3 --no-guessing-deps --buildsystem pybuild
+	dh $@ --package pipedput --with sysuser
+
+.PHONY: override_dh_auto_install
+override_dh_auto_install:
+	dh_auto_install --package python3-pipedput --destdir debian/python3-pipedput
