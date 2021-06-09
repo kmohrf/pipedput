@@ -12,6 +12,7 @@ ExecStart=uwsgi \
     --chown-socket=www-data:www-data \
     --chmod-socket=660 \
     --uid=_pipedput \
+    --gid=_pipedput \
     /etc/pipedput/uwsgi.ini
 Restart=on-failure
 RuntimeDirectory=pipedput
