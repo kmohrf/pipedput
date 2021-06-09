@@ -22,6 +22,7 @@ Package: pipedput
 Architecture: all
 Depends:
  ${misc:Depends},
+ python3-pipedput,
  python3-uwsgidecorators,
  uwsgi-core,
  uwsgi-plugin-python3,
