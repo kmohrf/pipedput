@@ -5,7 +5,7 @@ ConditionPathExists=/etc/pipedput/config.py
 [Service]
 Type=simple
 EnvironmentFile=/etc/default/pipedput
-Environment=PYTHONPATH=/etc/pipedput/pipedput_extensions
+Environment=PYTHONPATH=/etc/pipedput
 ExecStart=uwsgi \
     --plugin=python3 \
     --socket=/run/pipedput/socket \
