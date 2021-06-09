@@ -187,7 +187,7 @@ class PublishToPythonRepository(GenericGlobHook):
                 cmd,
                 check=True,
                 stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
             )
         except subprocess.CalledProcessError as exc:
             logger.error(
@@ -197,7 +197,7 @@ class PublishToPythonRepository(GenericGlobHook):
                     twine_cmd=cmd,
                     change_file=os.path.basename(dist_path),
                     config=self._pypirc_path,
-                    stderr=exc.stderr,
+                    twine_output=exc.stdout.decode(),
                 ),
             )
             raise
@@ -263,7 +263,7 @@ class PublishToDebRepository(GenericGlobHook):
                 cmd,
                 check=True,
                 stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
             )
         except subprocess.CalledProcessError as exc:
             logger.error(
@@ -272,7 +272,7 @@ class PublishToDebRepository(GenericGlobHook):
                 extra=dict(
                     change_file=change_path,
                     config=self._dput_config_path,
-                    stderr=exc.stderr,
+                    dput_output=exc.stdout.decode(),
                 ),
             )
             raise
