@@ -129,6 +129,10 @@ class PublishToDebRepositoryTest(FlaskTest):
                 "deb repository",
                 css_query_select(mail_html, "li.is-success .title"),
             )
+            self.assertIn(
+                "(bleuartd_0.1.0-1_amd64.changes)",
+                css_query_select(mail_html, "li.is-success .title"),
+            )
             dput.assert_called()
 
     @patch_dput(fail=True)
