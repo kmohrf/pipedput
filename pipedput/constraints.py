@@ -1,6 +1,7 @@
 import json
 from typing import Any, Callable
 from urllib.request import Request, urlopen
+import warnings
 
 from pipedput.typing import GitLabPipelineEvent
 from pipedput.utils import get_api_base_url_from_event
@@ -130,8 +131,9 @@ class WasSuccessful(AbstractConstraint):
         return event["object_attributes"]["status"] == "success"
 
 
-class WasManuallyTriggered(AbstractConstraint):
-    """only process the event if the pipeline was manually triggered"""
+class WasManuallyStarted(AbstractConstraint):
+    """only process the event if a job was manually started.
+    See: https://docs.gitlab.com/ee/ci/yaml/#whenmanual"""
 
     def __init__(self, require=any):
         super().__init__()
@@ -145,3 +147,20 @@ class WasManuallyTriggered(AbstractConstraint):
             return False
         else:
             return self._require(build["manual"] for build in event["builds"])
+
+
+# TODO: remove in pipedput 3.0
+class WasManuallyTriggered(WasManuallyStarted):
+    def __init__(self, *args, **kwargs):
+        cls = type(self)
+        new_cls = WasManuallyStarted
+        warnings.warn(
+            (
+                f"Call to deprecated class {cls.__module__}.{cls.__name__}. "
+                f"Use {new_cls.__module__}.{new_cls.__name__} instead."
+                f"Deprecated class will be removed in pipedput 3.0."
+            ),
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
+        super().__init__(*args, **kwargs)

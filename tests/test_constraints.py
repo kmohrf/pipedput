@@ -1,6 +1,7 @@
 from os.path import join
 import unittest
 from unittest.mock import MagicMock, patch
+import warnings
 
 from pipedput.constraints import (
     Callback,
@@ -8,7 +9,7 @@ from pipedput.constraints import (
     IsTag,
     OnBranch,
     OnDefaultBranch,
-    WasManuallyTriggered,
+    WasManuallyStarted,
     WasSuccessful,
 )
 from tests.utils import TestFileMock
@@ -82,30 +83,45 @@ class ConstraintTest(unittest.TestCase):
         self.assertTrue(is_on_default_branch(event_1))
         self.assertFalse(is_on_default_branch(event_2))
 
-    def test_was_manually_triggered_constraint(self):
+    def test_was_manually_started_constraint(self):
         # test any
-        was_manually_triggered = WasManuallyTriggered()
-        self.assertTrue(was_manually_triggered({"builds": [{"manual": True}]}))
-        self.assertFalse(was_manually_triggered({"builds": [{"manual": False}]}))
+        was_manually_started = WasManuallyStarted()
+        self.assertTrue(was_manually_started({"builds": [{"manual": True}]}))
+        self.assertFalse(was_manually_started({"builds": [{"manual": False}]}))
 
         # test all
-        was_manually_triggered = WasManuallyTriggered(all)
+        was_manually_started = WasManuallyStarted(all)
         self.assertTrue(
-            was_manually_triggered({"builds": [{"manual": True}, {"manual": True}]})
+            was_manually_started({"builds": [{"manual": True}, {"manual": True}]})
         )
         self.assertFalse(
-            was_manually_triggered({"builds": [{"manual": True}, {"manual": False}]})
+            was_manually_started({"builds": [{"manual": True}, {"manual": False}]})
         )
 
         # test specific build
-        was_manually_triggered = WasManuallyTriggered("foo")
+        was_manually_started = WasManuallyStarted("foo")
         self.assertTrue(
-            was_manually_triggered({"builds": [{"name": "foo", "manual": True}]})
+            was_manually_started({"builds": [{"name": "foo", "manual": True}]})
         )
         self.assertFalse(
-            was_manually_triggered({"builds": [{"name": "foo", "manual": False}]})
+            was_manually_started({"builds": [{"name": "foo", "manual": False}]})
         )
-        self.assertFalse(was_manually_triggered({"builds": []}))
+        self.assertFalse(was_manually_started({"builds": []}))
+
+    def test_was_manually_triggered_constraint(self):
+        try:
+            from pipedput.constraints import WasManuallyTriggered
+        except ImportError:
+            self.fail(
+                "WasManuallyTriggered constraint should exist in pipedput.constraints package."
+            )
+        else:
+            self.assertTrue(issubclass(WasManuallyTriggered, WasManuallyStarted))
+        with warnings.catch_warnings(record=True) as catched_warnings:
+            WasManuallyTriggered()
+        self.assertEqual(len(catched_warnings), 1)
+        self.assertTrue(issubclass(catched_warnings[-1].category, DeprecationWarning))
+        self.assertIn("deprecated", str(catched_warnings[-1].message))
 
     def test_was_successful_constraint(self):
         was_successful = WasSuccessful()
