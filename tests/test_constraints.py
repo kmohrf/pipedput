@@ -10,6 +10,7 @@ from pipedput.constraints import (
     OnBranch,
     OnDefaultBranch,
     WasManuallyStarted,
+    WasPipelineStartedFromUI,
     WasSuccessful,
 )
 from tests.utils import TestFileMock
@@ -122,6 +123,15 @@ class ConstraintTest(unittest.TestCase):
         self.assertEqual(len(catched_warnings), 1)
         self.assertTrue(issubclass(catched_warnings[-1].category, DeprecationWarning))
         self.assertIn("deprecated", str(catched_warnings[-1].message))
+
+    def test_was_pipeline_started_from_ui_constraint(self):
+        was_pipeline_started_from_ui = WasPipelineStartedFromUI()
+        self.assertTrue(
+            was_pipeline_started_from_ui({"object_attributes": {"source": "web"}})
+        )
+        self.assertFalse(
+            was_pipeline_started_from_ui({"object_attributes": {"source": "api"}})
+        )
 
     def test_was_successful_constraint(self):
         was_successful = WasSuccessful()

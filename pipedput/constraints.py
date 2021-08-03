@@ -131,6 +131,13 @@ class WasSuccessful(AbstractConstraint):
         return event["object_attributes"]["status"] == "success"
 
 
+class WasPipelineStartedFromUI(AbstractConstraint):
+    """only process the event if the pipeline was started from the GitLab web UI"""
+
+    def __call__(self, event: GitLabPipelineEvent):
+        return event["object_attributes"]["source"] == "web"
+
+
 class WasManuallyStarted(AbstractConstraint):
     """only process the event if a job was manually started.
     See: https://docs.gitlab.com/ee/ci/yaml/#whenmanual"""
