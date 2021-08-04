@@ -4,7 +4,9 @@ from pipedput.constraints import (  # noqa: F401
     IsTag,
     OnBranch,
     OnDefaultBranch,
+    WasManuallyStarted,
     WasManuallyTriggered,
+    WasPipelineStartedFromUI,
     WasSuccessful,
 )
 from pipedput.handler import Project  # noqa: F401
