@@ -3,12 +3,33 @@ import os
 from os.path import join
 import tarfile
 import tempfile
-from typing import Iterator
+from typing import Iterator, Optional, Sequence
 import unittest
+from unittest.mock import MagicMock, patch
 
-from pipedput.hooks import GetVersionMixin, Hook
+from pipedput.hooks import GetVersionMixin, Hook, PublishToPythonRepository
 from pipedput.typing import DeploymentStateLike, GitLabPipelineEvent
 from tests.utils import FILES_DIR
+
+
+def is_contained_in_order(members: Sequence, container: Sequence):
+    try:
+        first_member_index = container.index(members[0])
+    except ValueError:
+        return False
+    container_length = len(container)
+    for index, member in enumerate(members[1:], start=1):
+        if first_member_index + index > container_length:
+            return False
+        if container[first_member_index + index] != member:
+            return False
+    return True
+
+
+class SubprocessRunResult:
+    def __init__(self, stdout: Optional[bytes] = None, stderr: Optional[bytes] = None):
+        self.stdout = stdout or bytes()
+        self.stderr = stderr or bytes()
 
 
 class GetVersionHook(GetVersionMixin, Hook):
@@ -54,3 +75,44 @@ class GetVersionHookTest(RepoTestMixin, unittest.TestCase):
         deployment = self._get_version_for("06ce2aaeb9621563b8ead91a76ee370cf93366f4")
         self.assertTrue(deployment.was_successful)
         self.assertEqual(deployment.asset, "v0.1.4-1-g06ce2aa")
+
+
+class PublishToPythonRepositoryHookTest(unittest.TestCase):
+    @patch("subprocess.run")
+    def test_twine_with_config(self, subprocess_run: MagicMock):
+        subprocess_run.return_value = SubprocessRunResult()
+        hook = PublishToPythonRepository("foo.pypirc")
+        hook._twine("foo.tar.gz")
+        subprocess_run.assert_called_once()
+        self.assertTrue(
+            is_contained_in_order(
+                ["--config-file", "foo.pypirc"],
+                subprocess_run.call_args.args[0],
+            )
+        )
+
+    @patch("subprocess.run")
+    def test_twine_with_repository(self, subprocess_run: MagicMock):
+        subprocess_run.return_value = SubprocessRunResult()
+        hook = PublishToPythonRepository(repository="foo")
+        hook._twine("foo.tar.gz")
+        subprocess_run.assert_called_once()
+        self.assertTrue(
+            is_contained_in_order(
+                ["--repository", "foo"],
+                subprocess_run.call_args.args[0],
+            )
+        )
+
+    @patch("subprocess.run")
+    def test_twine_with_repository_url(self, subprocess_run: MagicMock):
+        subprocess_run.return_value = SubprocessRunResult()
+        hook = PublishToPythonRepository(repository="https://foo")
+        hook._twine("foo.tar.gz")
+        subprocess_run.assert_called_once()
+        self.assertTrue(
+            is_contained_in_order(
+                ["--repository-url", "https://foo"],
+                subprocess_run.call_args.args[0],
+            )
+        )

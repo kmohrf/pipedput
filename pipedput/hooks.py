@@ -162,9 +162,15 @@ class PublishToPythonRepository(GenericGlobHook):
     DISTRIBUTABLE_PATTERN = re.compile(r"\.egg-info$")
     TWINE_ARGS = []
 
-    def __init__(self, pypirc_path: Optional[str] = None, **kwargs):
+    def __init__(
+        self,
+        pypirc_path: Optional[str] = None,
+        repository: Optional[str] = None,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
         self._pypirc_path = pypirc_path
+        self._repository = repository
 
     def _is_python_distributable(self, filepath):
         with tarfile.open(filepath) as tar:
@@ -181,7 +187,13 @@ class PublishToPythonRepository(GenericGlobHook):
             args.extend(self.TWINE_ARGS)
         if self._pypirc_path is not None:
             args.extend(["--config-file", self._pypirc_path])
+        if self._repository is not None:
+            if re.match(r"^https?://", self._repository):
+                args.extend(["--repository-url", self._repository])
+            else:
+                args.extend(["--repository", self._repository])
         cmd = ["twine", "upload", *args, dist_path]
+
         try:
             return subprocess.run(
                 cmd,
