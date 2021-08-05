@@ -256,7 +256,7 @@ class PublishToPythonRepository(GenericGlobHook):
 
 class PublishToDebRepository(GenericGlobHook):
     DEFAULT_NAME = "deb repository"
-    GLOB_PATTERN = "**/*changes"
+    GLOB_PATTERN = "**/*.changes"
     DPUT_ARGS = ["--unchecked"]
 
     def __init__(self, dput_config_path: str, **kwargs):
