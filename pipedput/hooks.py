@@ -168,10 +168,10 @@ class PublishToPythonRepository(GenericGlobHook):
 
     def _is_python_distributable(self, filepath):
         with tarfile.open(filepath) as tar:
-            return any(
-                self.DISTRIBUTABLE_PATTERN.search(member.name)
-                for member in tar.getmembers()
-            )
+            for member in tar.getmembers():
+                if self.DISTRIBUTABLE_PATTERN.search(member.name):
+                    return True
+        return False
 
     def _twine(
         self, dist_path: str, twine_args: Optional[Sequence[str]] = None
