@@ -10,15 +10,18 @@
             <li class="{% if deployment.was_successful %}is-success{% else %}is-failure{% endif %}">
                 <p class="title">
                     {{ deployment.target_name }}
-                    {% if deployment.asset %}({{ deployment.asset }}){% endif %}
+                    {% if deployment.asset %}<small>{{ deployment.asset }}</small>{% endif %}
                 </p>
-                {% if deployment.exc %}
-                    <blockquote class="is-failure">
-                        {{ deployment.exc }}
-                    </blockquote>
-                {% endif %}
-                {% if deployment.error %}
-                    <pre>{{ error }}</pre>
+                {% if deployment.exc or deployment.error %}
+                    <details>
+                        <summary>Details</summary>
+                        {% if deployment.exc %}
+                            <pre class="is-failure">{{ deployment.exc }}</pre>
+                        {% endif %}
+                        {% if deployment.error %}
+                            <pre>{{ error }}</pre>
+                        {% endif %}
+                    </details>
                 {% endif %}
             </li>
         {% endfor %}

@@ -25,13 +25,14 @@
                     0 10px 10px -5px rgba(0, 0, 0, 0.04);
             }
 
-            blockquote {
+            pre {
                 border-left: 5px solid;
                 margin-left: .5rem;
                 padding: .5rem 0 .5rem 1rem;
+                white-space: pre-wrap;
             }
 
-            blockquote.is-failure {
+            pre.is-failure {
                 border-color: crimson;
             }
 
@@ -48,14 +49,17 @@
                 color: crimson;
             }
 
+            .checklist .title small {
+                display: block;
+                color: #555;
+            }
+
             .checklist > li.is-success::marker {
-                content: "✔";
-                color: darkgreen;
+                content: "🎉";
             }
 
             .checklist > li.is-failure::marker {
-                content: "✘";
-                color: crimson;
+                content: "🛑";
             }
 
             pre, code {
