@@ -1,19 +1,26 @@
-image: git-registry.hack-hro.de:443/kmohrf/pipedput/build:buster
+variables:
+  TOX_VERSION: ">=3.21,<4.0"
+  LANG: C.UTF-8
+
+default:
+  image: git-registry.hack-hro.de:443/kmohrf/pipedput/build:buster
 
 stages:
   - test
   - build
   - deploy
 
-.run_tests: &run_tests
+.run_tox: &run_tox
   stage: test
   variables:
     TOX_SKIP_ENV: lint
+  before_script:
+    - pip3 install "tox$TOX_VERSION"
   script:
-    - tox -v
+    - PATH=/usr/local/bin:$PATH tox -v
 
 lint:
-  <<: *run_tests
+  <<: *run_tox
   variables:
     TOX_SKIP_ENV: test-*
 
@@ -27,7 +34,7 @@ lint::types:
     - make lint-python-pyright
 
 test::python37:
-  <<: *run_tests
+  <<: *run_tox
 
 build::deb-package:
   stage: build
