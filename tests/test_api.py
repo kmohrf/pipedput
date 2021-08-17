@@ -89,6 +89,9 @@ class ErrorReportTest(FlaskTest):
                     "finished_at": datetime.datetime.now().isoformat(),
                     "ref": "0000000000000000000000000000000000000000",
                 },
+                "commit": {
+                    "author": {"email": "herbert+commit-author@gitlab.localhost"}
+                },
                 "user": {
                     "name": "Herbert",
                     "email": "herbert@gitlab.localhost",
@@ -111,8 +114,12 @@ class ErrorReportTest(FlaskTest):
             res = self.app.post("/api/projects/fail-badly/publish", json=data)
             self.assertEqual(res.status_code, 200)
             self.assertEqual(len(outbox), 1)
-            mail_html = outbox[0].html
-            self.assertIn("nope", mail_html)
+            report_message = outbox[0]
+            self.assertEqual(
+                set(report_message.recipients),
+                {"herbert+commit-author@gitlab.localhost", "herbert@gitlab.localhost"},
+            )
+            self.assertIn("nope", report_message.html)
 
 
 class PublishToDebRepositoryTest(FlaskTest):

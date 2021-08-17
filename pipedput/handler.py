@@ -46,9 +46,14 @@ def _get_artifact_urls(event: GitLabPipelineEvent) -> Iterator[str]:
 
 def _send_report_mail(event: GitLabPipelineEvent, content: str, **kwargs):
     project_name = event["project"]["path_with_namespace"]
+    recipients = {event["user"]["email"]}
+    try:
+        recipients.add(event["commit"]["author"]["email"])
+    except KeyError:
+        pass
     send_mail(
         subject=f"[pipedput] {project_name} deployment",
-        recipients=[event["user"]["email"]],
+        recipients=list(recipients),
         html=content,
         **kwargs,
     )
