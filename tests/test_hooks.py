@@ -72,7 +72,7 @@ class PublishToPythonRepositoryHookTest(ContainedInOrderMixin, unittest.TestCase
         subprocess_run.assert_called_once()
         self.assertInOrder(
             ["--config-file", "foo.pypirc"],
-            subprocess_run.call_args.args[0],
+            subprocess_run.call_args[0][0],
         )
 
     @patch("subprocess.run")
@@ -83,7 +83,7 @@ class PublishToPythonRepositoryHookTest(ContainedInOrderMixin, unittest.TestCase
         subprocess_run.assert_called_once()
         self.assertInOrder(
             ["--repository", "foo"],
-            subprocess_run.call_args.args[0],
+            subprocess_run.call_args[0][0],
         )
 
     @patch("subprocess.run")
@@ -94,5 +94,5 @@ class PublishToPythonRepositoryHookTest(ContainedInOrderMixin, unittest.TestCase
         subprocess_run.assert_called_once()
         self.assertInOrder(
             ["--repository-url", "https://foo"],
-            subprocess_run.call_args.args[0],
+            subprocess_run.call_args[0][0],
         )
