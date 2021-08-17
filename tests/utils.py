@@ -9,6 +9,7 @@ from os.path import dirname, join
 import re
 import subprocess
 import threading
+from typing import Sequence
 from unittest.mock import MagicMock, patch
 
 import lxml.etree
@@ -25,6 +26,34 @@ BIN_DIR = join(BASE_DIR, "bin")
 HTTP_TEST_SERVER_PORT = 31312
 
 logger = logging.getLogger(__name__)
+
+
+def is_contained_in_order(members: Sequence, container: Sequence):
+    try:
+        first_member_index = container.index(members[0])
+    except ValueError:
+        return False
+    container_length = len(container)
+    for index, member in enumerate(members[1:], start=1):
+        if first_member_index + index > container_length:
+            return False
+        if container[first_member_index + index] != member:
+            return False
+    return True
+
+
+class ContainedInOrderMixin:
+    def assertInOrder(self, members: Sequence, container: Sequence, msg=None):
+        contained_in_order = is_contained_in_order(members, container)
+        if not contained_in_order and msg is None:
+            members_str = str(list(map(str, members)))
+            container_str = str(list(map(str, container)))
+            msg = (
+                f"Order of members in container was not correct. \n"
+                f"Was looking for: {members_str}\n"
+                f"in: {container_str}."
+            )
+        self.assertTrue(contained_in_order, msg)
 
 
 def css_query_select(content, selector):

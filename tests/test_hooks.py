@@ -3,27 +3,13 @@ import os
 from os.path import join
 import tarfile
 import tempfile
-from typing import Iterator, Optional, Sequence
+from typing import Iterator, Optional
 import unittest
 from unittest.mock import MagicMock, patch
 
 from pipedput.hooks import GetVersionMixin, Hook, PublishToPythonRepository
 from pipedput.typing import DeploymentStateLike, GitLabPipelineEvent
-from tests.utils import FILES_DIR
-
-
-def is_contained_in_order(members: Sequence, container: Sequence):
-    try:
-        first_member_index = container.index(members[0])
-    except ValueError:
-        return False
-    container_length = len(container)
-    for index, member in enumerate(members[1:], start=1):
-        if first_member_index + index > container_length:
-            return False
-        if container[first_member_index + index] != member:
-            return False
-    return True
+from tests.utils import ContainedInOrderMixin, FILES_DIR
 
 
 class SubprocessRunResult:
@@ -77,18 +63,16 @@ class GetVersionHookTest(RepoTestMixin, unittest.TestCase):
         self.assertEqual(deployment.asset, "v0.1.4-1-g06ce2aa")
 
 
-class PublishToPythonRepositoryHookTest(unittest.TestCase):
+class PublishToPythonRepositoryHookTest(ContainedInOrderMixin, unittest.TestCase):
     @patch("subprocess.run")
     def test_twine_with_config(self, subprocess_run: MagicMock):
         subprocess_run.return_value = SubprocessRunResult()
         hook = PublishToPythonRepository("foo.pypirc")
         hook._twine("foo.tar.gz")
         subprocess_run.assert_called_once()
-        self.assertTrue(
-            is_contained_in_order(
-                ["--config-file", "foo.pypirc"],
-                subprocess_run.call_args.args[0],
-            )
+        self.assertInOrder(
+            ["--config-file", "foo.pypirc"],
+            subprocess_run.call_args.args[0],
         )
 
     @patch("subprocess.run")
@@ -97,11 +81,9 @@ class PublishToPythonRepositoryHookTest(unittest.TestCase):
         hook = PublishToPythonRepository(repository="foo")
         hook._twine("foo.tar.gz")
         subprocess_run.assert_called_once()
-        self.assertTrue(
-            is_contained_in_order(
-                ["--repository", "foo"],
-                subprocess_run.call_args.args[0],
-            )
+        self.assertInOrder(
+            ["--repository", "foo"],
+            subprocess_run.call_args.args[0],
         )
 
     @patch("subprocess.run")
@@ -110,9 +92,7 @@ class PublishToPythonRepositoryHookTest(unittest.TestCase):
         hook = PublishToPythonRepository(repository="https://foo")
         hook._twine("foo.tar.gz")
         subprocess_run.assert_called_once()
-        self.assertTrue(
-            is_contained_in_order(
-                ["--repository-url", "https://foo"],
-                subprocess_run.call_args.args[0],
-            )
+        self.assertInOrder(
+            ["--repository-url", "https://foo"],
+            subprocess_run.call_args.args[0],
         )
