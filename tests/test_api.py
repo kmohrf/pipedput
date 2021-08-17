@@ -137,8 +137,8 @@ class PublishToDebRepositoryTest(FlaskTest):
                 css_query_select(mail_html, "li.is-success .title"),
             )
             self.assertIn(
-                "(bleuartd_0.1.0-1_amd64.changes)",
-                css_query_select(mail_html, "li.is-success .title"),
+                "bleuartd_0.1.0-1_amd64.changes",
+                css_query_select(mail_html, "li.is-success .title small"),
             )
             dput.assert_called()
 
