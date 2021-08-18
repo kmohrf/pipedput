@@ -16,6 +16,6 @@ COPY --from=pipedput-builddeps \
     /usr/src/app/pipedput-build-deps_*.deb \
     /srv/local-apt-repository/pipedput-build-deps.deb
 RUN /usr/lib/local-apt-repository/rebuild && \
-    apt update -y && \
+    apt update -y --allow-releaseinfo-change && \
     apt install -y -t buster-backports pipedput-build-deps && \
     apt-get clean -y

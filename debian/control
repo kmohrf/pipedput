@@ -8,15 +8,17 @@ Build-Depends:
  dh-python,
  dh-sysuser,
  python3-all,
- python3-typing-extensions (>= 3.7.4),
- python3-cssselect,
  python3-flake8,
+ python3-setuptools,
+ wget,
+# package dependencies
+ git,
+ python3-cssselect,
  python3-flask,
  python3-flask-mail,
  python3-lxml,
- python3-setuptools,
- wget,
-Standards-Version: 4.5.0
+ python3-typing-extensions (>= 3.7.4),
+Standards-Version: 4.5.1
 
 Package: pipedput
 Architecture: all
@@ -37,12 +39,13 @@ Depends:
  ${misc:Depends},
  ${python3:Depends},
  python3-all,
- python3-typing-extensions (>= 3.7.4),
  python3-flask,
  python3-flask-mail,
  python3-jinja2,
+ python3-typing-extensions (>= 3.7.4),
 Suggests:
  ${misc:Suggests},
  dput,
+ git,
  twine,
 Description: A general-purpose GitLab pipeline artifact handler (python lib)
