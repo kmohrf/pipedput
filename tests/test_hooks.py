@@ -14,6 +14,7 @@ from pipedput.hooks import (
     PublishToPythonRepository,
 )
 from pipedput.typing import DeploymentStateLike, GitLabPipelineEvent
+from pipedput.utils import Configuration
 from tests.utils import ContainedInOrderMixin, FILES_DIR
 
 
@@ -52,6 +53,13 @@ class GetVersionHookTest(RepoTestMixin, unittest.TestCase):
             }
             return list(hook(config, "foo"))[0]
 
+    @patch.dict(os.environ, {"PATH": ""})
+    def test_fails_if_git_bin_is_missing(self):
+        deployment = self._get_version_for("4aa551d1b8da6fbddd593d5b50c7991b86593b2d")
+        self.assertFalse(deployment.was_successful)
+        self.assertIsNotNone(deployment.exc)
+        self.assertIn("Could not find 'git' binary", str(deployment.exc))
+
     def test_no_tags_version(self):
         deployment = self._get_version_for("4aa551d1b8da6fbddd593d5b50c7991b86593b2d")
         self.assertTrue(deployment.was_successful)
@@ -69,14 +77,31 @@ class GetVersionHookTest(RepoTestMixin, unittest.TestCase):
 
 
 class PublishToPythonRepositoryHookTest(ContainedInOrderMixin, unittest.TestCase):
+    SAMPLE_CONFIG = os.path.join(FILES_DIR, "sample.pypirc")
+
+    @patch.dict(os.environ, {"PATH": ""})
+    def test_fails_if_twine_bin_is_missing(self):
+        hook = PublishToPythonRepository(self.SAMPLE_CONFIG)
+        with self.assertRaises(Configuration.ConfigurationError):
+            hook._twine("foo.tar.gz")
+
+    @patch("subprocess.run")
+    def test_fails_if_config_file_is_missing(self, subprocess_run: MagicMock):
+        subprocess_run.return_value = SubprocessRunResult()
+        config_file = "does_not_exist.pypirc"
+        hook = PublishToPythonRepository(config_file)
+        with self.assertRaises(Configuration.ConfigurationError):
+            hook._twine("foo.tar.gz")
+            subprocess_run.assert_not_called()
+
     @patch("subprocess.run")
     def test_twine_with_config(self, subprocess_run: MagicMock):
         subprocess_run.return_value = SubprocessRunResult()
-        hook = PublishToPythonRepository("foo.pypirc")
+        hook = PublishToPythonRepository(self.SAMPLE_CONFIG)
         hook._twine("foo.tar.gz")
         subprocess_run.assert_called_once()
         self.assertInOrder(
-            ["--config-file", "foo.pypirc"],
+            ["--config-file", self.SAMPLE_CONFIG],
             subprocess_run.call_args[0][0],
         )
 
@@ -105,6 +130,21 @@ class PublishToPythonRepositoryHookTest(ContainedInOrderMixin, unittest.TestCase
 
 class PublishToDebRepositoryHookTest(ContainedInOrderMixin, unittest.TestCase):
     SAMPLE_CONFIG = os.path.join(FILES_DIR, "sample.dput.cf")
+
+    @patch.dict(os.environ, {"PATH": ""})
+    def test_fails_if_dput_bin_is_missing(self):
+        hook = PublishToDebRepository(self.SAMPLE_CONFIG)
+        with self.assertRaises(Configuration.ConfigurationError):
+            hook._dput("foo.tar.gz")
+
+    @patch("subprocess.run")
+    def test_fails_if_config_file_is_missing(self, subprocess_run: MagicMock):
+        subprocess_run.return_value = SubprocessRunResult()
+        config_file = "does_not_exist.dput.cf"
+        hook = PublishToDebRepository(config_file)
+        with self.assertRaises(Configuration.ConfigurationError):
+            hook._dput("foo.deb")
+            subprocess_run.assert_not_called()
 
     @patch("subprocess.run")
     def test_dput_execution(self, subprocess_run: MagicMock):

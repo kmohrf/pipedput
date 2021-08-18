@@ -12,12 +12,14 @@ Build-Depends:
  python3-setuptools,
  wget,
 # package dependencies
+ dput,
  git,
  python3-cssselect,
  python3-flask,
  python3-flask-mail,
  python3-lxml,
  python3-typing-extensions (>= 3.7.4),
+ twine,
 Standards-Version: 4.5.1
 
 Package: pipedput

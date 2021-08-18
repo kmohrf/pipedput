@@ -1,3 +1,5 @@
+import logging
+import os
 import shutil
 import socket
 import urllib.error
@@ -12,6 +14,7 @@ from jinja2 import Environment, PackageLoader
 from pipedput.typing import GitLabPipelineEvent
 
 
+_logger = logging.getLogger(__name__)
 _jinja_env = Environment(
     loader=PackageLoader("pipedput"),
 )
@@ -71,3 +74,34 @@ def create_template_renderer(template_name: str, **context_defaults):
         return render_template(template_name, **context_defaults)
 
     return _render_template
+
+
+class Configuration:
+    class ConfigurationError(Exception):
+        pass
+
+    @classmethod
+    def _check(cls, condition: bool, message: str, warn_only: bool):
+        if condition:
+            if warn_only:
+                _logger.warning(message)
+            else:
+                raise cls.ConfigurationError(message)
+
+    @classmethod
+    def check_bin_exists(cls, bin_name: str, warn_only: bool = False):
+        cls._check(
+            shutil.which(bin_name) is None,
+            f"Could not find '{bin_name}' binary on PATH, but it is required. "
+            f"Did you forget to install it on the system?",
+            warn_only,
+        )
+
+    @classmethod
+    def check_file_exists(cls, file_path: str, warn_only: bool = False):
+        cls._check(
+            not os.path.exists(file_path),
+            f"The file '{file_path}' was specified in the configuration but "
+            f"does not exist.",
+            warn_only,
+        )

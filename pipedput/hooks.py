@@ -10,6 +10,7 @@ from typing import Any, Iterator, Mapping, Optional, Sequence
 from urllib.parse import urlsplit
 
 from pipedput.typing import Constraint, DeploymentStateLike, GitLabPipelineEvent
+from pipedput.utils import Configuration
 
 logger = logging.getLogger(__name__)
 
@@ -76,6 +77,10 @@ class GetVersionMixin:
     def __init__(self, clone_token: Optional[str] = None, **kwargs):
         super().__init__(**kwargs)
         self._clone_token = clone_token
+        self.check_prerequisites(warn_only=True)
+
+    def check_prerequisites(self, warn_only: bool = False):
+        Configuration.check_bin_exists("git", warn_only=warn_only)
 
     def _get_clone_url(self, event: GitLabPipelineEvent):
         """ """
@@ -95,6 +100,7 @@ class GetVersionMixin:
     def _get_version(self, event: GitLabPipelineEvent):
         """Retrieves a human readable version name based on git-describe
         for the commit that triggered the pipeline"""
+        self.check_prerequisites()
         url = self._get_clone_url(event)
         with tempfile.TemporaryDirectory() as tmp_dir:
             subprocess.run(
@@ -171,6 +177,12 @@ class PublishToPythonRepository(GenericGlobHook):
         super().__init__(**kwargs)
         self._pypirc_path = pypirc_path
         self._repository = repository
+        self.check_prerequisites(warn_only=True)
+
+    def check_prerequisites(self, warn_only: bool = False):
+        Configuration.check_bin_exists("twine", warn_only=warn_only)
+        if self._pypirc_path is not None:
+            Configuration.check_file_exists(self._pypirc_path, warn_only=warn_only)
 
     def _is_python_distributable(self, filepath):
         with tarfile.open(filepath) as tar:
@@ -182,6 +194,7 @@ class PublishToPythonRepository(GenericGlobHook):
     def _twine(
         self, dist_path: str, twine_args: Optional[Sequence[str]] = None
     ) -> subprocess.CompletedProcess:
+        self.check_prerequisites()
         args = list(twine_args) if twine_args is not None else []
         if self.TWINE_ARGS:
             args.extend(self.TWINE_ARGS)
@@ -262,10 +275,16 @@ class PublishToDebRepository(GenericGlobHook):
     def __init__(self, dput_config_path: str, **kwargs):
         self._dput_config_path = dput_config_path
         super().__init__(**kwargs)
+        self.check_prerequisites(warn_only=True)
+
+    def check_prerequisites(self, warn_only: bool = False):
+        Configuration.check_bin_exists("dput", warn_only=warn_only)
+        Configuration.check_file_exists(self._dput_config_path, warn_only=warn_only)
 
     def _dput(
         self, change_path: str, dput_args: Optional[Sequence[str]] = None
     ) -> subprocess.CompletedProcess:
+        self.check_prerequisites()
         args = list(dput_args) if dput_args is not None else []
         if self.DPUT_ARGS:
             args.extend(self.DPUT_ARGS)
