@@ -5,6 +5,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{% block title %}{{ title | default('pipedput') }}{% endblock %}</title>
         <style>
+            * {
+                box-sizing: border-box;
+            }
+
             html {
                 background: #f0f0f0;
                 color: #222;
@@ -33,9 +37,10 @@
 
             footer {
                 padding: 0 2rem;
-                margin-top: 1rem;
+                margin-top: 1.5rem;
                 font-size: .8rem;
                 color: grey;
+                text-align: center;
             }
 
             pre {
@@ -75,6 +80,10 @@
                 content: "🛑";
             }
 
+            em {
+                white-space: nowrap;
+            }
+
             pre, code {
                 font-family: 'Fira Code', Menlo, ui-monospace, SFMono-Regular, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
             }
@@ -98,15 +107,15 @@
                 </header>
             {% endblock %}
             {% block content %}{% endblock %}
-            {% if maintainer %}
-                <footer>
-                    <p>
-                        You have received this mail because you were listed as a project maintainer for <em>{{ project.key }}</em>
-                        in the pipedput configuration file on <code>{{ hostname }}</code>.
-                        If you don’t want to receive these mails anymore please contact the administrator of that host.
-                    </p>
-                </footer>
-            {% endif %}
         </main>
+        {% if maintainer %}
+            <footer>
+                <p>
+                    You have received this mail because you were listed as a project maintainer for <em>{{ project.key }}</em>
+                    in the pipedput configuration file on <code>{{ hostname }}</code>.
+                    If you don’t want to receive these mails anymore please contact the administrator of that host.
+                </p>
+            </footer>
+        {% endif %}
     </body>
 </html>
