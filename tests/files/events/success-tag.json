@@ -37,7 +37,7 @@
         "name": "Administrator",
         "username": "root",
         "avatar_url": "http://www.gravatar.com/avatar/e32bd13e2add097461cb96824b7a829c?s=80\u0026d=identicon",
-        "email": "user_email@gitlab.localhost:31312"
+        "email": "user_email@gitlab.localhost"
     },
     "project":{
         "id": 1,
@@ -59,7 +59,7 @@
         "url": "http://gitlab.localhost:31312/gitlab-org/gitlab-test/commit/bcbb5ec396a2c0f828686f14fac9b80b780504f2",
         "author":{
             "name": "User",
-            "email": "user@gitlab.localhost:31312"
+            "email": "user@gitlab.localhost"
         }
     },
     "builds":[
@@ -79,7 +79,7 @@
                 "name": "Administrator",
                 "username": "root",
                 "avatar_url": "http://www.gravatar.com/avatar/e32bd13e2add097461cb96824b7a829c?s=80\u0026d=identicon",
-                "email": "admin@gitlab.localhost:31312"
+                "email": "admin@gitlab.localhost"
             },
             "runner": {
                 "id":380987,
@@ -113,7 +113,7 @@
                 "name": "Administrator",
                 "username": "root",
                 "avatar_url": "http://www.gravatar.com/avatar/e32bd13e2add097461cb96824b7a829c?s=80\u0026d=identicon",
-                "email": "admin@gitlab.localhost:31312"
+                "email": "admin@gitlab.localhost"
             },
             "runner": {
                 "id": 380987,
@@ -147,7 +147,7 @@
                 "name": "Administrator",
                 "username": "root",
                 "avatar_url": "http://www.gravatar.com/avatar/e32bd13e2add097461cb96824b7a829c?s=80\u0026d=identicon",
-                "email": "admin@gitlab.localhost:31312"
+                "email": "admin@gitlab.localhost"
             },
             "runner": null,
             "artifacts_file":{
