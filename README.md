@@ -32,6 +32,7 @@ import logging
 
 # There is a lot more to discover, where this is coming from!
 from pipedput.conf import (
+    Contact,
     IsTag,
     OnDefaultBranch,
     Project,
@@ -91,7 +92,14 @@ PROJECTS = [
         [
             PublishToDebRepository(dput_cfg, should_deploy=is_release),
             PublishToPythonRepository(pipy_cfg, should_deploy=on_default_branch_and_successful)
-        ]
+        ],
+        # Email notifications for deployments and errors are sent to the user
+        # who triggered the pipeline and authored the commit by default. If
+        # you add maintainers to your project configuration they will receive
+        # these notifications as well.
+        maintainers={
+            Contact("A maintainer", "maintainer@example.com"),
+        },
     ),
 ]
 
