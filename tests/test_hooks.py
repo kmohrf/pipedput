@@ -7,7 +7,12 @@ from typing import Iterator, Optional
 import unittest
 from unittest.mock import MagicMock, patch
 
-from pipedput.hooks import GetVersionMixin, Hook, PublishToPythonRepository
+from pipedput.hooks import (
+    GetVersionMixin,
+    Hook,
+    PublishToDebRepository,
+    PublishToPythonRepository,
+)
 from pipedput.typing import DeploymentStateLike, GitLabPipelineEvent
 from tests.utils import ContainedInOrderMixin, FILES_DIR
 
@@ -94,5 +99,20 @@ class PublishToPythonRepositoryHookTest(ContainedInOrderMixin, unittest.TestCase
         subprocess_run.assert_called_once()
         self.assertInOrder(
             ["--repository-url", "https://foo"],
+            subprocess_run.call_args[0][0],
+        )
+
+
+class PublishToDebRepositoryHookTest(ContainedInOrderMixin, unittest.TestCase):
+    SAMPLE_CONFIG = os.path.join(FILES_DIR, "sample.dput.cf")
+
+    @patch("subprocess.run")
+    def test_dput_execution(self, subprocess_run: MagicMock):
+        subprocess_run.return_value = SubprocessRunResult()
+        hook = PublishToDebRepository(self.SAMPLE_CONFIG)
+        hook._dput("foo.deb")
+        subprocess_run.assert_called_once()
+        self.assertInOrder(
+            ["dput", "--config", self.SAMPLE_CONFIG],
             subprocess_run.call_args[0][0],
         )
