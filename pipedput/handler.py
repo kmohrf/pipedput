@@ -1,8 +1,9 @@
+import dataclasses
 import functools
 import logging
 import os
 import tempfile
-from typing import Iterable, Iterator, Union
+from typing import Callable, Iterable, Iterator, Union
 
 try:
     from uwsgidecorators import mulefunc
@@ -18,9 +19,9 @@ except ImportError:
 
 from pipedput.typing import DeploymentStateLike, GitLabPipelineEvent, HookLike
 from pipedput.utils import (
+    create_template_renderer,
     download_file,
     get_api_base_url_from_event,
-    render_template,
     send_mail,
     unzip,
 )
@@ -44,19 +45,43 @@ def _get_artifact_urls(event: GitLabPipelineEvent) -> Iterator[str]:
             yield f"{base_url}/projects/{project_id}/jobs/{job_id}/artifacts"
 
 
-def _send_report_mail(event: GitLabPipelineEvent, content: str, **kwargs):
-    project_name = event["project"]["path_with_namespace"]
+def _get_default_recipients(event: GitLabPipelineEvent):
     recipients = {event["user"]["email"]}
     try:
         recipients.add(event["commit"]["author"]["email"])
     except KeyError:
         pass
+    return list(recipients)
+
+
+def _send_report_mail(
+    project: "Project",
+    event: GitLabPipelineEvent,
+    render_template: Callable[..., str],
+    disable_maintainer_mails: bool = False,
+    **kwargs,
+):
+    project_name = event["project"]["path_with_namespace"]
+    subject = f"[pipedput] {project_name} deployment"
+    try:
+        recipients = kwargs.pop("recipients")
+    except KeyError:
+        recipients = _get_default_recipients(event)
     send_mail(
-        subject=f"[pipedput] {project_name} deployment",
+        subject=subject,
         recipients=list(recipients),
-        html=content,
+        html=render_template(project=project),
         **kwargs,
     )
+    if not disable_maintainer_mails:
+        for maintainer in project.maintainers:
+            if maintainer.email and maintainer.email not in recipients:
+                send_mail(
+                    subject=subject,
+                    recipients=[maintainer.email],
+                    html=render_template(project=project, maintainer=maintainer),
+                    **kwargs,
+                )
 
 
 def _handle_error():
@@ -68,8 +93,9 @@ def _handle_error():
             except Exception as exc:
                 logger.error("Intercepted unexpected error %s.", str(exc), exc_info=exc)
                 _send_report_mail(
+                    project,
                     event,
-                    render_template("mails/error.html", event=event, exc=exc),
+                    create_template_renderer("mails/error.html", event=event, exc=exc),
                 )
 
         return wrapper
@@ -93,8 +119,9 @@ def _handle_deployment_report():
                 deployments.append(deployment)
             if notify:
                 _send_report_mail(
+                    project,
                     event,
-                    render_template(
+                    create_template_renderer(
                         "mails/deployment.html", event=event, deployments=deployments
                     ),
                 )
@@ -102,6 +129,12 @@ def _handle_deployment_report():
         return wrapper
 
     return decorator
+
+
+@dataclasses.dataclass()
+class Contact:
+    name: str
+    email: str
 
 
 class Project:
@@ -121,6 +154,7 @@ class Project:
         hooks: Union[HookLike, Iterable[HookLike]] = None,
         pipeline_secret: str = None,
         artifact_download_token: str = None,
+        maintainers: Iterable[Contact] = tuple(),
     ) -> None:
         """
         :param key: the unique project key
@@ -134,10 +168,15 @@ class Project:
         :param artifact_download_token:
             A GitLab API token with `api` scope in case you want pipedput to act
             on pipeline events for a private project.
+        :param maintainers:
+            An iterable of Contact instances representing the project maintainers.
+            People listed as maintainers will receive status mails for all
+            errors and deployments.
         """
         self.key = key
         self.pipeline_secret = pipeline_secret
         self.artifact_download_token = artifact_download_token
+        self.maintainers = maintainers
         if hooks is None:
             self.hooks = []
         elif isinstance(hooks, Iterable):

@@ -63,3 +63,11 @@ def render_template(template_name: str, **context):
         hostname=hostname,
         **context,
     )
+
+
+def create_template_renderer(template_name: str, **context_defaults):
+    def _render_template(**context):
+        context_defaults.update(context)
+        return render_template(template_name, **context_defaults)
+
+    return _render_template

@@ -13,16 +13,29 @@
                     'Fira Sans', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
             }
 
-            main {
+            main,
+            footer {
                 min-width: 400px;
                 max-width: 75%;
-                margin: 3rem auto;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            main {
+                margin-top: 3rem;
                 border-radius: 10px;
                 padding: 2rem;
                 background: white;
                 box-shadow:
                     0 20px 25px -5px rgba(0, 0, 0, 0.1),
                     0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            }
+
+            footer {
+                padding: 0 2rem;
+                margin-top: 1rem;
+                font-size: .8rem;
+                color: grey;
             }
 
             pre {
@@ -79,11 +92,21 @@
         <main>
             {% block header %}
                 <header>
-                    <p>Hello {{ event.user.name }},</p>
+                    {% set name = maintainer.name if maintainer else event.user.name %}
+                    <p>Hello {{ name }},</p>
                     <p>this is the pipedput deployment service speaking to you from <code>{{ hostname }}</code>.</p>
                 </header>
             {% endblock %}
             {% block content %}{% endblock %}
+            {% if maintainer %}
+                <footer>
+                    <p>
+                        You have received this mail because you were listed as a project maintainer for <em>{{ project.key }}</em>
+                        in the pipedput configuration file on <code>{{ hostname }}</code>.
+                        If you don’t want to receive these mails anymore please contact the administrator of that host.
+                    </p>
+                </footer>
+            {% endif %}
         </main>
     </body>
 </html>

@@ -9,7 +9,7 @@ from pipedput.constraints import (  # noqa: F401
     WasPipelineStartedFromUI,
     WasSuccessful,
 )
-from pipedput.handler import Project  # noqa: F401
+from pipedput.handler import Contact, Project  # noqa: F401
 from pipedput.hooks import (  # noqa: F401
     DeploymentState,
     Hook,

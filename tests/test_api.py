@@ -221,4 +221,43 @@ class ArtifactTokenTest(FlaskTest):
             dput.assert_not_called()
 
 
+class MaintainerMailReportTest(FlaskTest):
+    @patch_dput(inject_mock_as="dput")
+    def test_maintainers_receive_status_mail(self, dput: MagicMock):
+        test_data = self._load_event("success-tag.json")
+        with mail.record_messages() as outbox:
+            res = self.app.post(
+                "/api/projects/deb-with-maintainers/publish", json=test_data
+            )
+            self.assertEqual(res.status_code, 200)
+            self.assertEqual(
+                len(outbox),
+                2,
+                "Only two mails should have been sent. The first to the commit author and "
+                "pipeline initiator and the second to one of the two maintainers. "
+                "The second maintainer has the same email address as the commit author so they must "
+                "not get a second email.",
+            )
+            self.assertIn(
+                "Hello Administrator,", css_query_select(outbox[0].html, "header")
+            )
+            self.assertIn("Hello Ingo,", css_query_select(outbox[1].html, "header"))
+            self.assertIn(
+                "You have received this mail because you were listed as a "
+                "project maintainer for <em>deb-with-maintainers</em>",
+                outbox[1].html,
+            )
+            for message in outbox:
+                message_html = message.html
+                self.assertIn(
+                    "deb repository",
+                    css_query_select(message_html, "li.is-success .title"),
+                )
+                self.assertIn(
+                    "bleuartd_0.1.0-1_amd64.changes",
+                    css_query_select(message_html, "li.is-success .title small"),
+                )
+            dput.assert_called()
+
+
 start_gitlab_mock_server()
