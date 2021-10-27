@@ -9,6 +9,8 @@ variables:
 lint::python-types:
   image: node:lts-buster-slim
   stage: test
+  tags:
+    - fast-io
   script:
     - apt update && apt install -y make python3-pip wget
     - pip3 install ./ uwsgidecorators sentry_sdk
