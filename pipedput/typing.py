@@ -1,10 +1,4 @@
-from typing import Callable, Iterator, List, Mapping, Optional, TYPE_CHECKING
-
-try:
-    from typing import Protocol, TypedDict
-except ImportError:
-    if not TYPE_CHECKING:
-        from typing_extensions import Protocol, TypedDict
+from typing import Callable, Iterator, List, Mapping, Optional, Protocol, TypedDict
 
 
 class GitLabAuthor(TypedDict):

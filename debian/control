@@ -18,7 +18,6 @@ Build-Depends:
  python3-flask,
  python3-flask-mail,
  python3-lxml,
- python3-typing-extensions (>= 3.7.4),
  twine,
 Standards-Version: 4.5.1
 
@@ -44,7 +43,6 @@ Depends:
  python3-flask,
  python3-flask-mail,
  python3-jinja2,
- python3-typing-extensions (>= 3.7.4),
 Suggests:
  ${misc:Suggests},
  dput,
