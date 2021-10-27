@@ -220,7 +220,7 @@ class PublishToPythonRepository(GenericGlobHook):
                 exc_info=exc,
                 extra=dict(
                     twine_cmd=cmd,
-                    change_file=os.path.basename(dist_path),
+                    dist_file=os.path.basename(dist_path),
                     config=self._pypirc_path,
                     twine_output=exc.stdout.decode(),
                 ),
