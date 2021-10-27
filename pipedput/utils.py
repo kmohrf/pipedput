@@ -89,6 +89,10 @@ class Configuration:
                 raise cls.ConfigurationError(message)
 
     @classmethod
+    def assert_false(cls, condition: bool, message: str, warn_only: bool = False):
+        cls._check(condition, message, warn_only)
+
+    @classmethod
     def check_bin_exists(cls, bin_name: str, warn_only: bool = False):
         cls._check(
             shutil.which(bin_name) is None,
