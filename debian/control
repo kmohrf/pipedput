@@ -19,7 +19,7 @@ Build-Depends:
  python3-flask-mail,
  python3-lxml,
  twine,
-Standards-Version: 4.5.1
+Standards-Version: 4.6.0
 
 Package: pipedput
 Architecture: all
