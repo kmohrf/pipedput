@@ -1,30 +1,12 @@
+include:
+  - project: 'kmohrf/gitlab-recipes'
+    ref: main
+    file: '/templates/main.gitlab-ci.yml'
+
 variables:
-  TOX_VERSION: ">=3.21,<4.0"
-  LANG: C.UTF-8
+  DEBBUILD_DEFAULT: $DEBBUILD_PY_BULLSEYE
 
-default:
-  image: git-registry.hack-hro.de:443/kmohrf/pipedput/build:buster
-
-stages:
-  - test
-  - build
-  - deploy
-
-.run_tox: &run_tox
-  stage: test
-  variables:
-    TOX_SKIP_ENV: lint
-  before_script:
-    - pip3 install "tox$TOX_VERSION"
-  script:
-    - PATH=/usr/local/bin:$PATH tox -v
-
-lint:
-  <<: *run_tox
-  variables:
-    TOX_SKIP_ENV: test-*
-
-lint::types:
+lint::python-types:
   image: node:lts-buster-slim
   stage: test
   script:
@@ -33,16 +15,10 @@ lint::types:
     - npm install -g pyright
     - make lint-python-pyright
 
-test::python37:
-  <<: *run_tox
-
-build::deb-package:
-  stage: build
-  variables:
-    PYBUILD_DISABLE: test
-  script:
-    - make dist-deb DEBIAN_BUILDPACKAGE_COMMAND="dpkg-buildpackage -sa --no-sign" DISABLE_PYTHON_TESTS=1
-  artifacts:
-    paths:
-      - build/debian
-    expire_in: 1w
+test::python:
+  before_script:
+    - echo "gitlab.localhost" >/etc/hosts
+  parallel:
+    matrix:
+      - IMAGE:
+        - $DEBBUILD_PY_BULLSEYE

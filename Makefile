@@ -6,8 +6,6 @@ COVERAGE_BIN ?= $(PYTHON_BIN) -m coverage
 .PHONY: default-target
 default-target: help
 
-include ./make.d/ci.mk
-
 .PHONY: lint-python-pyright
 lint-python-pyright:
 	$(PYRIGHT_BIN) --verbose pipedput
