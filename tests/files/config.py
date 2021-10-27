@@ -29,8 +29,8 @@ def to_deb_repo():
     return PublishToDebRepository("dummy.cfg", should_deploy=is_release)
 
 
-def to_pypi_repo():
-    return PublishToPythonRepository("dummy.cfg", should_deploy=is_release)
+def to_pypi_repo(**kwargs):
+    return PublishToPythonRepository("dummy.cfg", should_deploy=is_release, **kwargs)
 
 
 class FailHook(Hook):
@@ -46,6 +46,7 @@ DEFAULT_MAIL_RECIPIENTS = ["tester@localhost"]
 PROJECTS = [
     Project("deb", to_deb_repo()),
     Project("pypi", to_pypi_repo()),
+    Project("pypi-to-gitlab", to_pypi_repo(publish_to_gitlab=True)),
     Project("deb-and-pypi", [to_deb_repo(), to_pypi_repo()]),
     Project("auth", None, "cde456"),
     Project("with-gitlab-token", to_deb_repo(), artifact_download_token=api_token),

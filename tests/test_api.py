@@ -182,6 +182,21 @@ class PublishToPythonRepositoryTest(FlaskTest):
             )
             twine.assert_called()
 
+    @patch_twine(inject_mock_as="twine")
+    def test_successful_deployment_to_gitlab(self, twine: MagicMock):
+        test_data = self._load_event("success-tag.json")
+        res = self.app.post("/api/projects/pypi-to-gitlab/publish", json=test_data)
+        self.assertEqual(res.status_code, 200)
+        self.assertIn(
+            "repository_url",
+            twine.call_args.kwargs,
+            "Twine should have been called with a custom repository_url.",
+        )
+        self.assertEqual(
+            twine.call_args.kwargs["repository_url"],
+            "http://gitlab.localhost:31312/api/v4/projects/1/packages/pypi",
+        )
+
 
 class MultipleHooksTest(FlaskTest):
     @patch_twine(inject_mock_as="twine")

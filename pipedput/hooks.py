@@ -10,7 +10,7 @@ from typing import Any, Iterator, Mapping, Optional, Sequence
 from urllib.parse import urlsplit
 
 from pipedput.typing import Constraint, DeploymentStateLike, GitLabPipelineEvent
-from pipedput.utils import Configuration
+from pipedput.utils import Configuration, get_api_base_url_from_event
 
 logger = logging.getLogger(__name__)
 
@@ -172,14 +172,29 @@ class PublishToPythonRepository(GenericGlobHook):
         self,
         pypirc_path: Optional[str] = None,
         repository: Optional[str] = None,
+        publish_to_gitlab: bool = False,
         **kwargs,
     ):
         super().__init__(**kwargs)
         self._pypirc_path = pypirc_path
         self._repository = repository
+        self._publish_to_gitlab = publish_to_gitlab
         self.check_prerequisites(warn_only=True)
 
     def check_prerequisites(self, warn_only: bool = False):
+        Configuration.assert_false(
+            self._publish_to_gitlab is True and self._repository is not None,
+            "You may only specify a repository OR set publish_to_gitlab to True. "
+            "Specifying both for the same hook is not supported.",
+            warn_only=warn_only,
+        )
+        Configuration.assert_false(
+            self._publish_to_gitlab is True and self._pypirc_path is None,
+            "When publishing python packages to GitLab it is required to configure "
+            "the credentials in a pypirc configuration file. Please provide the "
+            "pypirc_path configuration option.",
+            warn_only=warn_only,
+        )
         Configuration.check_bin_exists("twine", warn_only=warn_only)
         if self._pypirc_path is not None:
             Configuration.check_file_exists(self._pypirc_path, warn_only=warn_only)
@@ -192,7 +207,10 @@ class PublishToPythonRepository(GenericGlobHook):
         return False
 
     def _twine(
-        self, dist_path: str, twine_args: Optional[Sequence[str]] = None
+        self,
+        dist_path: str,
+        twine_args: Optional[Sequence[str]] = None,
+        repository_url: Optional[str] = None,
     ) -> subprocess.CompletedProcess:
         self.check_prerequisites()
         args = list(twine_args) if twine_args is not None else []
@@ -200,7 +218,9 @@ class PublishToPythonRepository(GenericGlobHook):
             args.extend(self.TWINE_ARGS)
         if self._pypirc_path is not None:
             args.extend(["--config-file", self._pypirc_path])
-        if self._repository is not None:
+        if repository_url is not None:
+            args.extend(["--repository-url", repository_url])
+        elif self._repository is not None:
             if re.match(r"^https?://", self._repository):
                 args.extend(["--repository-url", self._repository])
             else:
@@ -248,8 +268,14 @@ class PublishToPythonRepository(GenericGlobHook):
                 artifact_name,
                 event["object_attributes"]["id"],
             )
+            twine_kwargs = {}
+            if self._publish_to_gitlab is True:
+                gitlab_api_url = get_api_base_url_from_event(event)
+                project_id = event["project"]["id"]
+                pypi_repo_url = f"{gitlab_api_url}/projects/{project_id}/packages/pypi"
+                twine_kwargs["repository_url"] = pypi_repo_url
             try:
-                process = self._twine(artifact_path, twine_args)
+                process = self._twine(artifact_path, twine_args, **twine_kwargs)
             except subprocess.CalledProcessError as exc:
                 logger.error(
                     "Unable to upload python distributable %s for pipeline %s.",
