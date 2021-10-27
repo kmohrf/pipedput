@@ -4,8 +4,9 @@
 #   * on-demand download (temporarily stored in the local 'build/' directory)
 
 # alternative version: "master" (the tip of the current development branch)
-MAKEFILET_DOWNLOAD_VERSION ?= v0.7.3
-MAKEFILET_DOWNLOAD_URL ?= https://notabug.org/sumpfralle/makefilet/archive/$(MAKEFILET_DOWNLOAD_VERSION).tar.gz
+MAKEFILET_DOWNLOAD_VERSION ?= v0.9.1
+MAKEFILET_DOWNLOAD_URL_TEMPLATE ?= https://notabug.org/sumpfralle/makefilet/archive/__VERSION__.tar.gz
+MAKEFILET_DOWNLOAD_URL ?= $(subst __VERSION__,$(MAKEFILET_DOWNLOAD_VERSION),$(MAKEFILET_DOWNLOAD_URL_TEMPLATE))
 
 # first attempt: system-wide installation (e.g. deb package) or submodule of this project?
 -include makefilet/main.mk

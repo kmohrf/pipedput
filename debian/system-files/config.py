@@ -62,12 +62,14 @@ PROJECTS = [
         # instead of a single hook!
         [
             PublishToDebRepository(dput_cfg, should_deploy=is_release),
-            PublishToPythonRepository(pipy_cfg, should_deploy=on_default_branch_and_successful)
-        ]
+            PublishToPythonRepository(
+                pipy_cfg, should_deploy=on_default_branch_and_successful
+            ),
+        ],
     ),
     Project(
         "mockups",
         # Use custom hooks and constraints!
         BackupJPEGs(should_deploy=IsUser("our_cool_designer")),
-    )
+    ),
 ]

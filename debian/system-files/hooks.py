@@ -28,7 +28,7 @@ class BackupJPEGs(GenericGlobHook):
         event: GitLabPipelineEvent,
         artifact_path: str,
         artifact_name: str,
-        **kwargs
+        **kwargs,
     ):
         try:
             shutil.copy(artifact_path, self.BACKUP_DIR)
