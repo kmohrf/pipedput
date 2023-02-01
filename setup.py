@@ -32,7 +32,7 @@ setup(
         "Development Status :: 4 - Beta",
     ],
     install_requires=[
-        "flask>=1.0.2,<2.0.0",
+        "flask>=1.1.2,<3.0.0",
         "flask-mail<=1.0.0",
         "jinja2",
     ],
