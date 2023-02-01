@@ -47,6 +47,7 @@ class APISecurityTest(FlaskTest):
         res = self.app.post(
             "/api/projects/auth/publish",
             headers={"X-Gitlab-Token": "__invalid_token__"},
+            json={},
         )
         self.assertEqual(res.status_code, 403)
 
