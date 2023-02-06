@@ -108,14 +108,20 @@
             {% endblock %}
             {% block content %}{% endblock %}
         </main>
-        {% if maintainer %}
-            <footer>
+        <footer>
+            {% if maintainer %}
                 <p>
                     You have received this mail because you were listed as a project maintainer for <em>{{ project.key }}</em>
                     in the pipedput configuration file on <code>{{ hostname }}</code>.
                     If you don’t want to receive these mails anymore please contact the administrator of that host.
                 </p>
-            </footer>
-        {% endif %}
+            {% else %}
+                <p>
+                    You have received this mail because you have pushed changes to the
+                    <a href="{{ event.project.web_url }}"><em>{{ event.project.name }}</em></a> repository and
+                    pipedput on <code>{{  hostname }}</code> is configured to execute deployments for it.
+                </p>
+            {% endif %}
+        </footer>
     </body>
 </html>

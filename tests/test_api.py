@@ -9,6 +9,7 @@ from tests.utils import (
     create_bin_patcher,
     css_query_select,
     FILES_DIR,
+    HTMLInMixin,
     start_gitlab_mock_server,
 )
 
@@ -237,7 +238,7 @@ class ArtifactTokenTest(FlaskTest):
             dput.assert_not_called()
 
 
-class MaintainerMailReportTest(FlaskTest):
+class MailNotificationTest(HTMLInMixin, FlaskTest):
     @patch_dput(inject_mock_as="dput")
     def test_maintainers_receive_status_mail(self, dput: MagicMock):
         test_data = self._load_event("success-tag.json")
@@ -256,6 +257,12 @@ class MaintainerMailReportTest(FlaskTest):
             )
             self.assertIn(
                 "Hello Administrator,", css_query_select(outbox[0].html, "header")
+            )
+            self.assertHTMLIn(
+                "You have received this mail because you have pushed changes to the "
+                '<a href="http://gitlab.localhost:31312/gitlab-org/gitlab-test">'
+                "<em>Gitlab Test</em></a> repository",
+                outbox[0].html,
             )
             self.assertIn("Hello Ingo,", css_query_select(outbox[1].html, "header"))
             self.assertIn(
