@@ -57,6 +57,10 @@ MAIL_USERNAME = "pipedput@mail.example.org"
 MAIL_PASSWORD = "abc123"
 MAIL_DEFAULT_SENDER = "pipedput@mail.example.org"
 
+# A link to your documentation will be included in outgoing
+# mail notifications if you set this option.
+DEPLOYMENT_DOCUMENTATION_URL = "https://our-internal-deployment-documentation.example.org"
+
 # You can define any type of variables like you would
 # in any other python file!
 pipeline_token = "my_secret_pipeline_token"

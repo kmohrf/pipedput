@@ -43,6 +43,9 @@ MAIL_SERVER = "localhost"
 MAIL_PORT = 25
 MAIL_DEFAULT_SENDER = "noreply@localhost"
 DEFAULT_MAIL_RECIPIENTS = ["tester@localhost"]
+DEPLOYMENT_DOCUMENTATION_URL = (
+    "https://our-internal-deployment-documentation.example.org"
+)
 PROJECTS = [
     Project("deb", to_deb_repo()),
     Project("pypi", to_pypi_repo()),

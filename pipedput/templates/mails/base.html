@@ -122,6 +122,12 @@
                     pipedput on <code>{{  hostname }}</code> is configured to execute deployments for it.
                 </p>
             {% endif %}
+            {% if deployment_documentation %}
+                <p>
+                    You may find additional information in the deployment documentation on
+                    <a href="{{ deployment_documentation }}">{{ deployment_documentation | url_hostname }}</a>.
+                </p>
+            {% endif %}
         </footer>
     </body>
 </html>

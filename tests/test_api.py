@@ -282,5 +282,18 @@ class MailNotificationTest(HTMLInMixin, FlaskTest):
                 )
             dput.assert_called()
 
+    def test_all_mail_notifications_contain_documentation_link(self):
+        test_data = self._load_event("success-tag.json")
+        with mail.record_messages() as outbox:
+            self.app.post("/api/projects/deb-with-maintainers/publish", json=test_data)
+            self.app.post("/api/projects/fail-badly/publish", json=test_data)
+            for message in outbox:
+                self.assertHTMLIn(
+                    "You may find additional information in the deployment documentation on "
+                    '<a href="https://our-internal-deployment-documentation.example.org">'
+                    "our-internal-deployment-documentation.example.org</a>.",
+                    message.html,
+                )
+
 
 start_gitlab_mock_server()

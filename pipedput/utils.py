@@ -20,6 +20,10 @@ _jinja_env = Environment(
 )
 
 
+def get_url_hostname(url: str):
+    return urllib.parse.urlparse(url).hostname
+
+
 def download_file(url: str, destination: str, token: str = None) -> None:
     request = Request(url)
     if token is not None:
@@ -109,3 +113,6 @@ class Configuration:
             f"does not exist.",
             warn_only,
         )
+
+
+_jinja_env.filters["url_hostname"] = get_url_hostname

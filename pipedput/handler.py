@@ -5,6 +5,8 @@ import os
 import tempfile
 from typing import Callable, Iterable, Iterator, Union
 
+from flask import current_app
+
 try:
     from uwsgidecorators import mulefunc
 except ImportError:
@@ -63,6 +65,12 @@ def _send_report_mail(
 ):
     project_name = event["project"]["path_with_namespace"]
     subject = f"[pipedput] {project_name} deployment"
+    render_args = {
+        "project": project,
+        "deployment_documentation": current_app.config.get(
+            "DEPLOYMENT_DOCUMENTATION_URL", ""
+        ),
+    }
     try:
         recipients = kwargs.pop("recipients")
     except KeyError:
@@ -70,7 +78,7 @@ def _send_report_mail(
     send_mail(
         subject=subject,
         recipients=list(recipients),
-        html=render_template(project=project),
+        html=render_template(**render_args),
         **kwargs,
     )
     if not disable_maintainer_mails:
@@ -79,7 +87,7 @@ def _send_report_mail(
                 send_mail(
                     subject=subject,
                     recipients=[maintainer.email],
-                    html=render_template(project=project, maintainer=maintainer),
+                    html=render_template(**render_args, maintainer=maintainer),
                     **kwargs,
                 )
 
