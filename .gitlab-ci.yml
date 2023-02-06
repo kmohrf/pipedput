@@ -1,26 +1,29 @@
 include:
-  - project: 'kmohrf/gitlab-recipes'
-    ref: main
-    file: '/templates/main.gitlab-ci.yml'
+  - project: 'kmohrf/gitlabfilet'
+    ref: 'v1.0.0'
+    file:
+      - '/templates/deb.gitlab-ci.yml'
+      - '/templates/python.gitlab-ci.yml'
+
+stages:
+  - test
+  - build
 
 variables:
-  DEBBUILD_DEFAULT: $DEBBUILD_PY_BULLSEYE
+  GITLABFILET_IMAGE: git-registry.hack-hro.de:443/kmohrf/docker-recipes/debbuild-python:bullseye
 
 lint::python-types:
-  image: node:lts-buster-slim
+  image: node:lts-bullseye-slim
   stage: test
   tags:
     - fast-io
   script:
     - apt update && apt install -y make python3-pip wget
-    - pip3 install ./ uwsgidecorators sentry_sdk
+    - pip3 install uwsgidecorators sentry_sdk
+    - pip3 install -e .
     - npm install -g pyright
     - make lint-python-pyright
 
 test::python:
   before_script:
-    - echo "gitlab.localhost" >/etc/hosts
-  parallel:
-    matrix:
-      - IMAGE:
-        - $DEBBUILD_PY_BULLSEYE
+    - printf "\n127.0.0.1 gitlab.localhost\n" >>/etc/hosts
