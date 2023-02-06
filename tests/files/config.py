@@ -12,6 +12,7 @@ from pipedput.conf import (
     WasManuallyTriggered,
     WasSuccessful,
 )
+from pipedput.typing import GitLabPipelineEvent
 
 logging.basicConfig(
     level=logging.INFO,
@@ -34,7 +35,7 @@ def to_pypi_repo(**kwargs):
 
 
 class FailHook(Hook):
-    def __call__(self, *args, **kwargs):
+    def _execute(self, event: GitLabPipelineEvent, artifacts_directory: str):
         raise RuntimeError("nope")
 
 
