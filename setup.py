@@ -34,6 +34,7 @@ setup(
     install_requires=[
         "flask>=1.1.2,<3.0.0",
         "flask-mail<1.0.0",
+        "html2text",
         "jinja2",
     ],
     package_data={"": ["README.md"]},

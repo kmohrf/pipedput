@@ -5,6 +5,7 @@ from os.path import join
 import unittest
 from unittest.mock import MagicMock
 
+from pipedput.utils import html_to_markdown
 from tests.utils import (
     create_bin_patcher,
     css_query_select,
@@ -294,6 +295,14 @@ class MailNotificationTest(HTMLInMixin, FlaskTest):
                     "our-internal-deployment-documentation.example.org</a>.",
                     message.html,
                 )
+
+    def test_all_mails_contain_markdown_plain_text(self):
+        test_data = self._load_event("success-tag.json")
+        with mail.record_messages() as outbox:
+            self.app.post("/api/projects/deb-with-maintainers/publish", json=test_data)
+            self.app.post("/api/projects/fail-badly/publish", json=test_data)
+            for message in outbox:
+                self.assertEqual(message.body, html_to_markdown(message.html))
 
 
 start_gitlab_mock_server()

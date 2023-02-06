@@ -9,6 +9,7 @@ import zipfile
 
 from flask import current_app
 from flask_mail import Message
+import html2text
 from jinja2 import Environment, PackageLoader
 
 from pipedput.typing import GitLabPipelineEvent
@@ -52,10 +53,17 @@ def get_api_base_url_from_event(event: GitLabPipelineEvent) -> str:
     return f"{base_url.scheme}://{base_url.netloc}/api/v4"
 
 
+def html_to_markdown(html: str, width: int = 72) -> str:
+    return html2text.html2text(html, bodywidth=width)
+
+
 def send_mail(**kwargs):
     from pipedput.app import app, mail
 
     with app.app_context():
+        if "html" in kwargs and "body" not in kwargs:
+            kwargs["body"] = html_to_markdown(kwargs["html"])
+
         message = Message(**kwargs)
         default_recipients = current_app.config.get("DEFAULT_MAIL_RECIPIENTS", [])
         if default_recipients:

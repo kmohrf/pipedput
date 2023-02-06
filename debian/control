@@ -42,6 +42,7 @@ Depends:
  python3-all,
  python3-flask,
  python3-flask-mail,
+ python3-html2text,
  python3-jinja2,
 Suggests:
  ${misc:Suggests},
