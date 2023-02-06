@@ -98,7 +98,7 @@ class GetVersionMixin:
         return url
 
     def _get_version(self, event: GitLabPipelineEvent):
-        """Retrieves a human readable version name based on git-describe
+        """Retrieves a human-readable version name based on git-describe
         for the commit that triggered the pipeline"""
         self.check_prerequisites()
         url = self._get_clone_url(event)
