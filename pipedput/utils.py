@@ -2,6 +2,7 @@ import logging
 import os
 import shutil
 import socket
+from typing import Optional
 import urllib.error
 from urllib.parse import urlparse
 from urllib.request import Request, urlopen
@@ -22,10 +23,10 @@ _jinja_env = Environment(
 
 
 def get_url_hostname(url: str):
-    return urllib.parse.urlparse(url).hostname
+    return urlparse(url).hostname
 
 
-def download_file(url: str, destination: str, token: str = None) -> None:
+def download_file(url: str, destination: str, token: Optional[str] = None) -> None:
     request = Request(url)
     if token is not None:
         request.add_header("PRIVATE-TOKEN", token)

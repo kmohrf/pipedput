@@ -3,7 +3,7 @@ import functools
 import logging
 import os
 import tempfile
-from typing import Callable, Iterable, Iterator, Union
+from typing import Callable, Iterable, Iterator, Optional, Union
 
 from flask import current_app
 
@@ -112,12 +112,14 @@ def _handle_error():
 
 
 def _handle_deployment_report():
-    def decorator(func):
+    def decorator(
+        func: Callable[[Project, GitLabPipelineEvent], Iterable[DeploymentStateLike]]
+    ):
         @functools.wraps(func)
         def wrapper(project: Project, event: GitLabPipelineEvent):
             notify = False
             deployments = []
-            for deployment in func(project, event):  # type: DeploymentStateLike
+            for deployment in func(project, event):
                 logger.info(
                     "Deployment to %s completed %s.",
                     deployment.target_name,
@@ -159,9 +161,9 @@ class Project:
     def __init__(
         self,
         key: str,
-        hooks: Union[HookLike, Iterable[HookLike]] = None,
-        pipeline_secret: str = None,
-        artifact_download_token: str = None,
+        hooks: Optional[Union[HookLike, Iterable[HookLike]]] = None,
+        pipeline_secret: Optional[str] = None,
+        artifact_download_token: Optional[str] = None,
         maintainers: Iterable[Contact] = tuple(),
     ) -> None:
         """

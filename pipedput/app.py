@@ -22,7 +22,7 @@ if SENTRY_DSN:
     import sentry_sdk
     from sentry_sdk.integrations.flask import FlaskIntegration
 
-    sentry_sdk.init(
+    sentry_sdk.init(  # type: ignore
         dsn=SENTRY_DSN,
         integrations=[FlaskIntegration()],
         send_default_pii=True,
@@ -31,7 +31,7 @@ if SENTRY_DSN:
 
 
 def get_project_by_key(key: str) -> Project:
-    for project in app.config["PROJECTS"]:  # type: Project
+    for project in app.config["PROJECTS"]:
         if project.key == key:
             return project
     raise Project.DoesNotExist()
@@ -43,7 +43,7 @@ def is_allowed(project: Project, token: Optional[str]) -> bool:
 
 @app.route("/api/projects/<project_key>/publish", methods=["POST"])
 def handle_pipeline_event(project_key: str):
-    event: GitLabPipelineEvent = request.json
+    event: GitLabPipelineEvent = request.json  # type: ignore
 
     try:
         project = get_project_by_key(project_key)

@@ -31,7 +31,7 @@ class Hook:
 
     def __init__(
         self,
-        should_deploy: Constraint = None,
+        should_deploy: Optional[Constraint] = None,
         name: Optional[str] = None,
         notify_on_success: bool = DEFAULT_NOTIFY,
     ):
