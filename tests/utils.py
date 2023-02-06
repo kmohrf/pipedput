@@ -9,7 +9,7 @@ from os.path import dirname, join
 import re
 import subprocess
 import threading
-from typing import Sequence
+from typing import Optional, Sequence
 from unittest.mock import MagicMock, patch
 
 import lxml.etree
@@ -54,6 +54,24 @@ class ContainedInOrderMixin:
                 f"in: {container_str}."
             )
         self.assertTrue(contained_in_order, msg)
+
+
+class HTMLInMixin:
+    def assertHTMLIn(self, member: str, container: str, message: Optional[str] = None):
+        """A (stupidly) simple HTML string search assertion that ignores whitespace between tags."""
+        while True:
+            old_container = container
+            container = re.sub(r"\s+", " ", container)
+            container = re.sub(r"\s</", "</", container)
+            container = re.sub(r"<(span|code|p|style)>\s", r"<\1>", container)
+            container = re.sub(
+                r"<(/?)([a-z]+)( [^>]+)?>\s+<(/?)([a-z]+)( [^>]+)?>",
+                r"<\1\2\3><\4\5\6>",
+                container,
+            )
+            if old_container == container:
+                break
+        return self.assertIn(member, container, message)
 
 
 def css_query_select(content, selector):
