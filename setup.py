@@ -2,9 +2,8 @@ import os
 
 from setuptools import find_packages, setup
 
-from pipedput import __version__
-
 __dir = os.path.abspath(os.path.dirname(__file__))
+__version__ = "2.7.0"
 
 try:
     with open(os.path.join(__dir, "README.md"), encoding="utf-8") as f:
