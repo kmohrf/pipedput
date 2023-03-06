@@ -8,7 +8,6 @@ from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 import zipfile
 
-from flask import current_app
 from flask_mail import Message
 import html2text
 from jinja2 import Environment, PackageLoader
@@ -66,7 +65,7 @@ def send_mail(**kwargs):
             kwargs["body"] = html_to_markdown(kwargs["html"])
 
         message = Message(**kwargs)
-        default_recipients = current_app.config.get("DEFAULT_MAIL_RECIPIENTS", [])
+        default_recipients = app.config.get("DEFAULT_MAIL_RECIPIENTS", [])
         if default_recipients:
             message.bcc.extend(default_recipients)
         mail.send(message)

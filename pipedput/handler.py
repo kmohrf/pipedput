@@ -5,8 +5,6 @@ import os
 import tempfile
 from typing import Callable, Iterable, Iterator, Optional, Union
 
-from flask import current_app
-
 try:
     from uwsgidecorators import mulefunc
 except ImportError:
@@ -63,14 +61,17 @@ def _send_report_mail(
     disable_maintainer_mails: bool = False,
     **kwargs,
 ):
+    from pipedput.app import app
+
     project_name = event["project"]["path_with_namespace"]
     subject = f"[pipedput] {project_name} deployment"
-    render_args = {
-        "project": project,
-        "deployment_documentation": current_app.config.get(
-            "DEPLOYMENT_DOCUMENTATION_URL", ""
-        ),
-    }
+    with app.app_context():
+        render_args = {
+            "project": project,
+            "deployment_documentation": app.config.get(
+                "DEPLOYMENT_DOCUMENTATION_URL", ""
+            ),
+        }
     try:
         recipients = kwargs.pop("recipients")
     except KeyError:
