@@ -13,6 +13,7 @@ ExecStart=uwsgi \
     --chmod-socket=660 \
     --uid=_pipedput \
     --gid=_pipedput \
+    --die-on-term \
     /etc/pipedput/uwsgi.ini
 Restart=on-failure
 RuntimeDirectory=pipedput
