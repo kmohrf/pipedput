@@ -232,7 +232,6 @@ class PublishToPythonRepository(GenericGlobHook):
                 cmd,
                 check=True,
                 stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
             )
         except subprocess.CalledProcessError as exc:
             logger.error(
@@ -320,11 +319,15 @@ class PublishToDebRepository(GenericGlobHook):
                 cmd,
                 check=True,
                 stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
+                stderr=subprocess.PIPE,
             )
         except subprocess.CalledProcessError as exc:
+            # `dput` seems to use stdout for *all* problems/warnings/errors
+            # Let's stick to emitting stderr, if it is non-empty and fall back to stdout.
+            error_output = exc.stderr.decode() or exc.stdout.decode()
             logger.error(
-                "Could not upload deb changes with dput.",
+                "Could not upload deb changes with dput:\n%s",
+                error_output,
                 exc_info=exc,
                 extra=dict(
                     change_file=change_path,
