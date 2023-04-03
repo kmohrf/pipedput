@@ -3,7 +3,7 @@ import os
 from setuptools import find_packages, setup
 
 __dir = os.path.abspath(os.path.dirname(__file__))
-__version__ = "2.7.1"
+__version__ = "2.7.2"
 
 try:
     with open(os.path.join(__dir, "README.md"), encoding="utf-8") as f:
