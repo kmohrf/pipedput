@@ -1,6 +1,6 @@
 include:
   - project: 'kmohrf/gitlabfilet'
-    ref: 'v1.0.0'
+    ref: 'v2.1.0'
     file:
       - '/templates/deb.gitlab-ci.yml'
       - '/templates/python.gitlab-ci.yml'
@@ -10,18 +10,17 @@ stages:
   - build
 
 variables:
-  GITLABFILET_IMAGE: git-registry.hack-hro.de:443/kmohrf/docker-recipes/debbuild-python:bullseye
+  GITLABFILET_IMAGE: git-registry.hack-hro.de:443/kmohrf/docker-recipes/debbuild-python:trixie
+  NO_UPDATE_TOX: 1
 
 lint::python-types:
-  image: node:lts-bullseye-slim
+  image: node:lts-bookworm-slim
   stage: test
   tags:
     - fast-io
+  before_script:
+    - apt update && apt install -y wget make python3-flask python3-flask-mail python3-html2text python3-jinja2 python3-sentry-sdk python3-uwsgidecorators
   script:
-    - apt update && apt install -y make python3-pip wget
-    - pip3 install uwsgidecorators sentry_sdk
-    - pip3 install -e .
-    - npm install -g pyright
     - make lint-python-pyright
 
 test::python:

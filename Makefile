@@ -1,6 +1,6 @@
 include makefilet-download-ondemand.mk
 
-PYRIGHT_BIN = pyright
+PYRIGHT_BIN = npx pyright
 COVERAGE_BIN ?= $(PYTHON_BIN) -m coverage
 
 .PHONY: default-target

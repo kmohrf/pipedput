@@ -6,7 +6,7 @@ import tempfile
 from typing import Callable, Iterable, Iterator, Optional, Union
 
 try:
-    from uwsgidecorators import mulefunc
+    from uwsgidecorators import mulefunc  # type: ignore
 except ImportError:
 
     def mulefunc(func):

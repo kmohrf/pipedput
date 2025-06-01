@@ -39,7 +39,7 @@ class RepoTestMixin:
             dir=os.environ.get("envtmpdir", None)
         ) as temp_dir:
             with tarfile.open(join(FILES_DIR, "repo.tar.gz")) as tar:
-                tar.extractall(temp_dir)
+                tar.extractall(temp_dir, filter="data")
             yield f"file://{temp_dir}/test-repo"
 
 

@@ -31,7 +31,7 @@ setup(
         "Development Status :: 4 - Beta",
     ],
     install_requires=[
-        "flask>=1.1.2,<3.0.0",
+        "flask>=2.2.2,<4.0.0",
         "flask-mail<1.0.0",
         "html2text",
         "jinja2",
