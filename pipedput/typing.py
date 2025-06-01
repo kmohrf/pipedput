@@ -125,13 +125,11 @@ class DeploymentStateLike(Protocol):
 class HookLike(Protocol):
     name: str
 
-    def should_execute_for(self, event: GitLabPipelineEvent) -> bool:
-        ...
+    def should_execute_for(self, event: GitLabPipelineEvent) -> bool: ...
 
     def __call__(
         self, event: GitLabPipelineEvent, artifact_directory: str
-    ) -> Iterator[DeploymentStateLike]:
-        ...
+    ) -> Iterator[DeploymentStateLike]: ...
 
 
 Constraint = Callable[[GitLabPipelineEvent], bool]

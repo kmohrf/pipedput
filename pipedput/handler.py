@@ -114,7 +114,7 @@ def _handle_error():
 
 def _handle_deployment_report():
     def decorator(
-        func: Callable[[Project, GitLabPipelineEvent], Iterable[DeploymentStateLike]]
+        func: Callable[[Project, GitLabPipelineEvent], Iterable[DeploymentStateLike]],
     ):
         @functools.wraps(func)
         def wrapper(project: Project, event: GitLabPipelineEvent):

@@ -112,7 +112,9 @@ class OnBranch(AbstractConstraint):
                 )
                 return False
             raise
-        return any([ref["type"] == "branch" and ref["name"] == ref_name for ref in data])
+        return any(
+            [ref["type"] == "branch" and ref["name"] == ref_name for ref in data]
+        )
 
 
 class OnDefaultBranch(OnBranch):
