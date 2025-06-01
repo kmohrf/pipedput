@@ -1,3 +1,9 @@
+pipedput (2.8.0-1) unstable; urgency=medium
+
+  * New upstream release
+
+ -- Konrad Mohrfeldt <konrad.mohrfeldt@farbdev.org>  Mon, 02 Jun 2025 00:57:53 +0200
+
 pipedput (2.7.2-1) unstable; urgency=medium
 
   * New upstream release
