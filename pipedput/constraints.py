@@ -1,10 +1,14 @@
 import json
+import logging
 from typing import Any, Callable
+from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 import warnings
 
 from pipedput.typing import GitLabPipelineEvent
 from pipedput.utils import get_api_base_url_from_event
+
+logger = logging.getLogger(__name__)
 
 
 class AbstractConstraint:
@@ -96,11 +100,19 @@ class OnBranch(AbstractConstraint):
             f"{base_url}/projects/{project_id}/repository/commits/{commit_sha}/refs"
         )
         request = Request(commit_url, headers={"PRIVATE-TOKEN": self._api_token})
-        with urlopen(request) as response:
-            data = json.load(response)
-        return any(
-            [ref["type"] == "branch" and ref["name"] == ref_name for ref in data]
-        )
+        try:
+            with urlopen(request) as response:
+                data = json.load(response)
+        except HTTPError as exc:
+            if exc.status == 403:
+                logger.error(
+                    f"Permission denied while reading repository data from {commit_url}. "
+                    f"Please ensure that the provided GitLab API key has the "
+                    f"'read_api' permission."
+                )
+                return False
+            raise
+        return any([ref["type"] == "branch" and ref["name"] == ref_name for ref in data])
 
 
 class OnDefaultBranch(OnBranch):
