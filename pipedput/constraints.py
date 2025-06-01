@@ -68,7 +68,7 @@ class IsProject(AbstractConstraint):
 
     def __init__(self, project_name_with_namespace: str) -> None:
         """
-        :param project_name_with_namespace: the project name with it’s namespace. Something like 'foo/bar'
+        :param project_name_with_namespace: the project name with its namespace. Something like 'foo/bar'
         """
         super().__init__()
         self._name = project_name_with_namespace
