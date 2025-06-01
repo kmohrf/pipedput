@@ -1,5 +1,5 @@
 # local app configuration
-.env
+*.local
 /config.py
 /pipedput_extensions/
 *.twine.cfg
